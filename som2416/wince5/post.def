@@ -1,0 +1,13 @@
+
+LIBRARY POSTPROCESSOR
+EXPORTS
+	PST_Close
+	PST_Deinit
+	PST_Init
+	PST_IOControl
+	PST_Open
+	PST_PowerDown
+	PST_PowerUp
+	PST_Read
+	PST_Seek
+	PST_Write

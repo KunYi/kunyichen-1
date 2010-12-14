@@ -1,0 +1,1544 @@
+;
+; Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;
+; Use of this source code is subject to the terms of the Microsoft end-user
+; license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+; If you did not accept the terms of the EULA, you are not authorized to use
+; this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+; install media.
+;
+
+; Our variables
+#define BUILTIN_ROOT HKEY_LOCAL_MACHINE\Drivers\BuiltIn
+#define DRIVERS_DIR $(_PUBLICROOT)\common\oak\drivers
+;; //[david.modify] 2008-07-07 09:53
+#define DAVID_FILES_DIR $(_TARGETPLATROOT)\files\david
+
+
+; @CESYSGEN IF WCESHELLFE_MODULES_CTLPNL
+; This registry setting controls the checkboxes displayed in the Sounds CPL
+; under "enable clicks & taps". Set bit0 if you have a keyboard, set bit1 if
+; you have a touch screen. Set bit2 if you have HW buttons (NOTE: for now
+; HW buttons are mutually exclusive with the keyboard)
+[HKEY_LOCAL_MACHINE\ControlPanel]
+    "InputConfig"=dword:3   ; 3 => keybd and touch screen
+; @CESYSGEN ENDIF WCESHELLFE_MODULES_CTLPNL
+
+; @CESYSGEN IF WCESHELLFE_MODULES_EXPLORER
+; This registry setting controls display of the Explorer's suspend menu button
+[HKEY_LOCAL_MACHINE\Explorer]
+    "Suspend"=dword:1
+
+; Disable Suspend
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power]
+	"BattPowerOff"=dword:0
+	"ExtPowerOff"=dword:0
+	"WakeupPowerOff"=dword:0
+	"ScreenPowerOff"=dword:0
+; @CESYSGEN ENDIF WCESHELLFE_MODULES_EXPLORER
+
+
+; @CESYSGEN IF CE_MODULES_DEVICE
+
+; HIVE BOOT SECTION
+[HKEY_LOCAL_MACHINE\Drivers\Resources\IRQ]
+   "Identifier"=dword:1
+   "Minimum"=dword:1
+   "Space"=dword:20
+   "Ranges"="1-0x20"
+;  "Shared"=""
+
+[HKEY_LOCAL_MACHINE\Drivers\Resources\IO]
+   "Identifier"=dword:2
+   "Minimum"=dword:0
+   "Space"=dword:10000
+   "Ranges"="0-0xFFFF"
+; END HIVE BOOT SECTION
+
+
+; @CESYSGEN IF CE_MODULES_BATTDRVR
+#include "$(DRIVERS_DIR)\battdrvr\battdrvr.reg"
+; @CESYSGEN ENDIF CE_MODULES_BATTDRVR
+
+; @CESYSGEN IF CE_MODULES_NLEDDRVR
+#include "$(DRIVERS_DIR)\nleddrvr\nleddrvr.reg"
+; @CESYSGEN ENDIF CE_MODULES_NLEDDRVR
+
+; @CESYSGEN IF CE_MODULES_POINTER   
+IF BSP_NOTOUCH !
+[HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\TOUCH]
+  "MaxCalError"=dword:7
+IF BSP_SMDK2443_CFG
+; portrait 
+   "CalibrationData"="513,522 151,167 160,859 880,863 879,167 "
+;  "CalibrationData"="478,604 105,93 115,1105 832,1114 832,102 "
+;  "CalibrationData"="466,623 149,163 145,1101 798,1097 792,160 "
+;  "CalibrationData"="500,512 762,268 758,760 244,758 241,266 "
+; Landscape 
+;   "CalibrationData"="515,503 763,748 258,749 269,255 764,255 "
+ENDIF 
+IF BSP_SMDK2450_CFG
+; SMDK2450  QVAG
+;"CalibrationData"="2092,2054 1104,1293 1107,2828 3056,2831 3056,1293 " 
+; SMDK2450 WVGA
+;   "CalibrationData"="524,498 283,668 280,329 764,326 763,662 "  ;for 10bit
+;   "CalibrationData"="2096,1972 1107,2649 1114,1306 3074,1304 3071,2623 "  ;for 12 bit
+; //[david.modify] 2008-06-26 18:12
+
+;; //[david.modify] 2008-09-07 14:32 3.5inch touch
+IF BSP_DISPLAY_WIDTH=320
+IF BSP_DISPLAY_HEIGHT=240
+    "CalibrationData"="2072,1988 991,2611 1017,1356 3121,1366 3141,2628 "
+ENDIF
+ENDIF
+
+IF BSP_DISPLAY_WIDTH=480
+IF BSP_DISPLAY_HEIGHT=272
+;IF BSP_LCD_TYPE == BSP_LCD_INNOLUX_43 ;why not??
+IF BSP_LCD_TYPE=501
+    "CalibrationData"="2077,1980 1055,1418 1066,2581 3105,2570 3101,1417"
+ELSE
+    "CalibrationData"="2108,2009 1043, 1432  1046, 2590 3167, 2586 3167, 1432 "
+ENDIF
+ENDIF
+ENDIF
+
+
+
+ENDIF 
+ENDIF BSP_NOTOUCH !
+; @CESYSGEN ENDIF CE_MODULES_POINTER   
+
+; @CESYSGEN IF CE_MODULES_SERIAL
+IF BSP_NOSERIAL !
+IF BSP_NOUART0 !
+IF BSP_KITL != SERIAL_UART0
+;=============== UART0 (physical COM1 connector P1) (Serial) ===============
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Serial]
+   "DeviceArrayIndex"=dword:0
+   "Irq"=dword:1c
+   "MemBase"=dword:50000000
+   "MemLen"=dword:30 ;; 2c
+   "InterruptBitsShift"=dword:0 ; UART 0 Interrupt Sub Register shift bit.
+   "ISTTimeouts"=dword:200	; every 512 ticks checking Modem status.
+   "Prefix"="COM"
+;;   //[david.modify] 2008-06-02 11:47
+;; com1±»ÏµÍ³APÊ¹ÓÃ£¬ºìÍâ?
+;   "Index"=dword:1
+;   "Port"="COM1:"
+;; //[david.modify] 2008-08-22 14:26
+;; UART0ÓÃ×öTMC£¬ÒòÎªATLASIIIÆ½Ì¨ÉÏTMCÊ¹ÓÃCOM4
+   "Index"=dword:4
+   "Port"="COM4:"   
+;;    //[david.modify] 2008-05-19 15:41 ´®¿Ú0ÓÃ×÷DEBUGµ÷ÊÔÊ¹ÓÃ
+IF BSP_FM1182
+   "Dll"="serial_smdk2450.dll2"
+ELSE
+   "Dll"="serial_smdk2450.dll"
+ENDIF
+   "Order"=dword:0
+   "Priority"=dword:0
+
+   "DeviceType"=dword:0
+   "FriendlyName"=LOC_DISPLAYNAME_COM1
+   "Tsp"="unimodem.dll"
+   "IClass"="{CC5195AC-BA49-48a0-BE17-DF6D1B0173DD}"
+   "DevConfig"=hex: 10,00, 00,00, 05,00,00,00, 10,01,00,00, 00,4B,00,00, 00,00, 08, 00, 00, 00,00,00,00
+ENDIF
+ENDIF
+
+IF BSP_NOIRDA !
+; S2450 IrDA(UART2)
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\IRDA2450]
+   "DeviceArrayIndex"=dword:2
+   "Irq"=dword:f
+   "MemBase"=dword:50008000
+   "MemLen"=dword:30 ;;2C
+   "InterruptBitsShift"=dword:6 ; UART 2 Interrupt Sub Register shift bit.
+   ;"ISTTimeouts"=dword:200	; every 512 ticks checking Modem status.
+   "Prefix"="COM"
+   "Dll"="serial_smdk2450.Dll"
+   "Order"=dword:0
+   "Priority"=dword:0   
+;;   //[david.modify] 2008-08-22 14:28
+;; ÒòÎªTMCÊ¹ÓÃCOM4£¬ËùÒÔ´Ë´¦Ê¹ÓÃCOM6
+   "Index"=dword:6   
+   "Port"="COM6:"
+   "DeviceType"=dword:0  ; IRDA modem, 0 -> null modem
+   "FriendlyName"=LOC_DISPLAYNAME_RAWIR
+;;    //[david.modify] 2008-05-29 16:37
+   "Tsp"="unimodem.dll"      
+   "IClass"="{CC5195AC-BA49-48a0-BE17-DF6D1B0173DD}"
+   "DevConfig"=hex: 10,00, 00,00, 05,00,00,00, 10,01,00,00, 00,4B,00,00, 00,00, 08, 00, 00, 00,00,00,00
+ENDIF
+
+IF BSP_NOUART3 !
+IF BSP_KITL != SERIAL_UART3
+;=============== UART3 (physical COM3 connector P2) (Serial) ===============
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Serial3]
+   "DeviceArrayIndex"=dword:3
+   "Irq"=dword:12
+   "MemBase"=dword:5000C000
+   "MemLen"=dword:30 ;; 2c
+   "InterruptBitsShift"=dword:18 ; UART 3 Interrupt Sub Register shift bit.
+   "ISTTimeouts"=dword:200	; every 512 ticks checking Modem status.
+   "Prefix"="COM"
+   "Index"=dword:3
+;//[david.modify] 2008-07-11 14:09
+;// ÐÂ°æUART0ÓÃ×öTMC£¬UART3ÊÇÔ­À´µÄTMC
+;//=========================================
+;//    g_u32EbootDebugUart = S3C2450_BASE_REG_PA_UART0;   
+IF BSP_FM1182
+   ;for FM1182 wave
+   "Dll"="serial_smdk2450.dll"
+ELSE
+   "Dll"="serial_smdk2450.dll2"
+ENDIF
+   "Order"=dword:0
+   "Priority"=dword:0
+   "Port"="COM3:"
+   "DeviceType"=dword:0
+   "FriendlyName"=LOC_DISPLAYNAME_COM3
+   "Tsp"="unimodem.dll"
+   "IClass"="{CC5195AC-BA49-48a0-BE17-DF6D1B0173DD}"
+   "DevConfig"=hex: 10,00, 00,00, 05,00,00,00, 10,01,00,00, 00,4B,00,00, 00,00, 08, 00, 00, 00,00,00,00
+ENDIF
+ENDIF
+
+;;/[david.modify] 2008-05-29 16:29
+;;IF DEBUGSERIAL_IS_UART1 
+
+IF BSP_NOUART1 !
+IF BSP_KITL != SERIAL_UART1
+;=============== UART1 (physical COM2 connector P2) (Serial) ===============
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Serial1]
+   "DeviceArrayIndex"=dword:1
+   "Irq"=dword:17
+   "MemBase"=dword:50004000
+   "MemLen"=dword:30 ;; 2c
+   "InterruptBitsShift"=dword:3 ; UART 1 Interrupt Sub Register shift bit.
+   "ISTTimeouts"=dword:200	; every 512 ticks checking Modem status.
+   "Prefix"="COM"
+   "Index"=dword:2
+   "Dll"="serial_smdk2450.dll"
+   "Order"=dword:0
+   "Priority"=dword:0
+   "Port"="COM2:"
+   "DeviceType"=dword:0
+   "FriendlyName"=LOC_DISPLAYNAME_COM2
+   "Tsp"="unimodem.dll"
+   "IClass"="{CC5195AC-BA49-48a0-BE17-DF6D1B0173DD}"
+   "DevConfig"=hex: 10,00, 00,00, 05,00,00,00, 10,01,00,00, 00,4B,00,00, 00,00, 08, 00, 00, 00,00,00,00
+ENDIF
+ENDIF
+
+;;ENDIF
+
+;; //[david.modify] 2008-05-29 17:08
+;; ²»Ê¹ÓÃºìÍâ
+;;=================================
+IF 0
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\IrCOMM]
+   "Index"=dword:6
+
+[HKEY_LOCAL_MACHINE\Comm\Irsir1\Parms]
+   "Port"=dword:4
+   ; 0 = Use external dongle, 1 = Use internal IR
+   "IntIR"=dword:1
+   ; 0 - internal transceiver, 1 - Extended Systems JetEye dongle.
+   "TransceiverType"=dword:0
+ENDIF
+;;=================================
+
+ENDIF BSP_NOSERIAL !
+;=========== End of UART(Serial) ===============
+; @CESYSGEN ENDIF CE_MODULES_SERIAL
+
+; @CESYSGEN IF CE_MODULES_KEYBD
+; Keybd driver is the same.
+IF BSP_NOKEYBD !
+#include "$(DRIVERS_DIR)\keybd\keybd.reg"
+
+[HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\KEYBD]
+    "DriverName"="kbdmouse.dll"
+    "Irq"=dword:2
+    "IOBase"=dword:B2100000
+    "SSPBase"=dword:B1D00000
+
+; //[david.modify] 2008-07-23 18:27
+;;Ê¹TOUCHÆÁÄ»SOFT
+;;============================
+ [HKEY_CURRENT_USER\ControlPanel\Volume]  ; 0x100002-Enables loud key clicks 1-Enables quiet key clicks
+;    "Key"=dword:1                        ;Keyclicks: 1=soft, 0x10002=loud, 0x10000=Disable         
+ ;   "Screen"=dword:1	; ScreenTaps: 1=soft, 0x10002=loud, 0x10000=Disable
+        "Key"=dword:10000                        ;Keyclicks: 1=soft, 0x10002=loud, 0x10000=Disable         
+    "Screen"=dword:1	; ScreenTaps: 1=soft, 0x10002=loud, 0x10000=Disable
+   "Mute"=dword:7			; 7=Enable all sounds (1=Notifications, 2=Apps, 4=Events.)
+    "Volume"=dword:FFFFFFFF
+;;============================    
+
+#include "$(DRIVERS_DIR)\keybd\LayMgr.reg"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\$(input_locale)]
+	"Matrix"="kbdmouse.dll"
+
+
+; @CESYSGEN IF CE_MODULES_KBDA1
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00000401]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDA1
+
+; @CESYSGEN IF CE_MODULES_KBDHEB
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\0000040D]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDHEB
+
+; @CESYSGEN IF CE_MODULES_KBDTH0
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\0000041E]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDTH0
+
+; @CESYSGEN IF CE_MODULES_KBDINHIN
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00010439]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINHIN
+
+; @CESYSGEN IF CE_MODULES_KBDINMAR
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\0000044E]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINMAR
+
+; @CESYSGEN IF CE_MODULES_KBDINPUN
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00000446]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINPUN
+
+; @CESYSGEN IF CE_MODULES_KBDINTEL
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\0000044A]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINTEL
+
+; @CESYSGEN IF CE_MODULES_KBDINGUJ
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00000447]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINGUJ
+
+; @CESYSGEN IF CE_MODULES_KBDINKAN
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\0000044B]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINKAN
+
+; @CESYSGEN IF CE_MODULES_KBDINTAM
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00000449]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDINTAM
+
+; @CESYSGEN IF CE_MODULES_KBDDV
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Layouts\00010409]
+	"Matrix"="kbdmouse.dll"
+; @CESYSGEN ENDIF CE_MODULES_KBDDV
+
+ENDIF BSP_NOKEYBD !
+; @CESYSGEN ENDIF CE_MODULES_KEYBD
+
+
+; @CESYSGEN IF CE_MODULES_PCCARD
+IF BSP_NOPCCARD !
+;#include "$(_TARGETPLATROOT)\src\drivers\pccard\pcc_smdk2450.reg"
+#include "$(DRIVERS_DIR)\pccard\mdd\pcc_serv.reg"
+[HKEY_LOCAL_MACHINE\Drivers\PCCARD\PCMCIA\TEMPLATE\PCMCIA]
+   "Dll"="pcmcia.dll"
+   "NoConfig"=dword:1
+   "NoISR"=dword:1 ; Do not load any ISR.
+   "IClass"=multi_sz:"{6BEAB08A-8914-42fd-B33F-61968B9AAB32}=PCMCIA Card Services"
+ENDIF BSP_NOPCCARD !
+; @CESYSGEN ENDIF CE_MODULES_PCCARD
+
+;------------ HSMMC Driver ------------------------------------------------------------------------------------
+IF BSP_SMDK2443_CFG
+; @CESYSGEN IF CE_MODULES_SDBUS
+IF BSP_NOSD !
+IF BSP_EVT1
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\SDHC_SMDK2443]
+    "Order"=dword:21
+    "Dll"="sdhc_s3c2443.dll"
+    "Prefix"="SDH"
+    
+    "DMAChannel"=dword:0            ; DMA channel to use.  Set to 0xffffffff to disable DMA
+    "DMAIrq"=dword:35
+    "DMA_IST_Priority"=dword:96
+
+    "SDIOIrq"=dword:15
+    "SDDetectIrq"=dword:1
+    "SDIO_IST_Priority"=dword:97
+    
+    "PollingTimeout"=dword:100      ; 100 ms
+    "CardDetect_Thread_Priority"=dword:98
+    
+    "CardDetectGPIO"="F"            ; card detect on GPF1
+    "CardDetectMask"=dword:2
+    "CardDetectFlag"=dword:0
+    "CardDetectControlMask"=dword:fffffff3
+    "CardDetectControlFlag"=dword:0
+    "CardDetectPullupMask"=dword:fffffff3
+    "CardDetectPullupFlag"=dword:00000004
+    
+    "CardReadWriteGPIO"="B"         ; card R/W on GPB10
+    "CardReadWriteMask"=dword:0400
+    "CardReadWriteFlag"=dword:0400
+    "CardReadWriteControlMask"=dword:ffcfffff
+    "CardReadWriteControlFlag"=dword:0
+    "CardReadWritePullupMask"=dword:ffcfffff
+    "CardReadWritePullupFlag"=dword:00100000
+
+    "HandleBusyFinishOnCommand38"=dword:1
+    "DmaTransferTimeoutFactor"=dword:8
+    "DmaTransferTimeoutConstant"=dword:3000
+ELSE
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\SDHC_SMDK2443]
+    "Order"=dword:21
+    "Dll"="sdhc_s3c2443.dll"
+    "Prefix"="SDH"
+    
+    "DMAChannel"=dword:0            ; DMA channel to use.  Set to 0xffffffff to disable DMA
+    "DMAIrq"=dword:35
+    "DMA_IST_Priority"=dword:96
+
+    "SDIOIrq"=dword:15
+    "SDDetectIrq"=dword:1
+    "SDIO_IST_Priority"=dword:97
+    
+    "PollingTimeout"=dword:100      ; 100 ms
+    "CardDetect_Thread_Priority"=dword:98
+    
+    "CardDetectGPIO"="F"            ; card detect on GPF1
+    "CardDetectMask"=dword:2
+    "CardDetectFlag"=dword:0
+    "CardDetectControlMask"=dword:fffffff3
+    "CardDetectControlFlag"=dword:0
+    "CardDetectPullupMask"=dword:fffffff3
+    "CardDetectPullupFlag"=dword:00000008
+    
+    "CardReadWriteGPIO"="B"         ; card R/W on GPB10
+    "CardReadWriteMask"=dword:0400
+    "CardReadWriteFlag"=dword:0400
+    "CardReadWriteControlMask"=dword:ffcfffff
+    "CardReadWriteControlFlag"=dword:0
+    "CardReadWritePullupMask"=dword:ffcfffff
+    "CardReadWritePullupFlag"=dword:00200000
+
+    "HandleBusyFinishOnCommand38"=dword:1
+    "DmaTransferTimeoutFactor"=dword:8
+    "DmaTransferTimeoutConstant"=dword:3000
+ENDIF BSP_EVT1
+ENDIF BSP_NOSD !
+
+IF BSP_NOHSMMC !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\HSMMC]
+   	"InterfaceType"=dword:0     ; Internal
+    "Order"=dword:21
+    "Dll"="hsmmc_s3c2443.dll"
+    "Prefix"="HSC"
+    "ObjectCreationProc"="CreateHSMMCHCObject"
+	"MemBase"=dword:4A800000
+	"MemLen"=dword:100    
+	"Irq"=dword:14		; 20
+	"SysIntr"=dword:12		; (SYSINTR_FIRMWARE+2)
+	"BaseClockFrequency"=dword:5B8D800   ;96Mhz           ;B71B00  ;12Mhz  ;16E3600 ;24Mhz    
+	"TimeoutClockFrequency"=dword:5B8D800   ;96Mhz        ;B71B00   ;12Mhz  ;16E3600 ;24Mhz  
+ENDIF BSP_NOHSMMC !
+; @CESYSGEN ENDIF CE_MODULES_SDBUS
+ENDIF BSP_SMDK2443_CFG
+
+IF BSP_SMDK2450_CFG
+IF BSP_NOHSMMC_CH0 !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\HSMMC0]
+    "InterfaceType"=dword:0     ; Internal
+    "Order"=dword:21
+    "Dll"="s3c2450_hsmmc_ch0.dll"
+    "Prefix"="HSC"
+    "ObjectCreationProc"="CreateHSMMCHCObject"
+    "MemBase"=dword:4AC00000
+    "MemLen"=dword:100
+    "Irq"=dword:15		; 21
+    "BaseClockFrequency"=dword:5B8D800      ;5B8D800->96Mhz, 2DC6C00->48Mhz, 2255100->36Mhz, B71B00->12Mhz, 16E3600->24Mhz
+    "TimeoutClockFrequency"=dword:5B8D800   ;5B8D800->96Mhz, 2DC6C00->48Mhz, 2255100->36Mhz, B71B00->12Mhz, 16E3600->24Mhz
+ENDIF BSP_NOHSMMC_CH0 !
+
+IF BSP_NOHSMMC_CH1 !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\HSMMC1]
+    "InterfaceType"=dword:0     ; Internal
+    "Order"=dword:21
+    "Dll"="s3c2450_hsmmc_ch1.dll"
+    "Prefix"="HSC"
+    "ObjectCreationProc"="CreateHSMMCHCObject"
+    "MemBase"=dword:4A800000
+    "MemLen"=dword:100
+    "Irq"=dword:14		; 20
+    "BaseClockFrequency"=dword:5B8D800      ;5B8D800->96Mhz, 2DC6C00->48Mhz, 2255100->36Mhz, B71B00->12Mhz, 16E3600->24Mhz
+    "TimeoutClockFrequency"=dword:5B8D800   ;5B8D800->96Mhz, 2DC6C00->48Mhz, 2255100->36Mhz, B71B00->12Mhz, 16E3600->24Mhz
+ENDIF BSP_NOHSMMC_CH1 !
+ENDIF 
+
+
+
+;------------ I2C Driver ------------------------------------------------------------------------------------
+IF BSP_NOI2C !
+;; I2C Bus Driver
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\I2C]
+    "Prefix"="I2C"
+    "Dll"="I2C.DLL"
+    "Order"=dword:0
+    "Index"=dword:0
+    "Mode"=dword:1              ; Mode: 0 = POLLING, 1 = INTERRUPT
+    "SlaveAddress"=dword:0      ; Bus Driver's Slave Address
+    "FriendlyName"="I2C Bus Driver"
+;;     //[david.modify] 2008-05-17 10:51
+   "u32I2CAddrDebug"=dword:0
+   "u32DropRxAddr"=dword:1   
+    "IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"   ; Power-manageable generic
+ENDIF BSP_NOI2C !  
+
+
+IF BSP_NOPWRBTN !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\PowerButton]
+    "Dll"="PowerButton.dll"
+    "Prefix"="PWR"
+;;	 //[david.modify] 2008-05-28 14:51
+;; ½«PowerButtonÇý¶¯µÄ¼ÓÔØorder ´Ó0-->2    ;ÍíÓÚFILE SYSTEM
+    "Order"=dword:2 
+    "FriendlyName"="Power Controller Driver"
+    "IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"   ; Power-manageable generic
+ENDIF BSP_NOPWRBTN !
+
+
+IF BSP_NOPOST !
+;====================================================
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Post]
+   "Prefix"="PST"
+   "Dll"="post.dll"
+   "Index"=dword:1
+   "Order"=dword:1
+   "IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"
+;=====================================================
+ENDIF BSP_NOPOST !
+
+IF BSP_NOAUDIO !
+; @CESYSGEN IF CE_MODULES_WAVEAPI
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Audio]
+   "Prefix"="WAV"
+;    //[david.modify] 2008-06-18 11:28
+   "Dll"="s3c2450_wavedev.dll"
+   "Index"=dword:1
+   "Order"=dword:0
+IF BSP_SMDK2450_CFG
+   "IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"
+ENDIF
+; @CESYSGEN ENDIF CE_MODULES_WAVEAPI
+ENDIF BSP_NOAUDIO !
+
+
+
+;------------ USB Function Driver -------------------------------------------
+; @CESYSGEN IF CE_MODULES_USBFN
+IF BSP_NOUSBFN !
+IF BSP_KITL != USBSERIAL
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\SC2450USBFN]
+   "Dll"="sc2450usbfn.dll"
+   "Prefix"="UFN"
+   "Priority256"=dword:64
+   "IoBase"=dword:B0B00000
+   "IoLen"=dword:1000        ; Use one page
+   "Irq"=dword:19
+   "BusIoctl"=dword:2a0048
+;   "Order"=dword:1
+   "IClass"=multi_sz:"{E2BDC372-598F-4619-BC50-54B3F7848D35}=%b","{6F40791D-300E-44E4-BC38-E0E63CA8375C}=%b"
+   
+
+
+;; //[david.modify] 2008-09-24 15:36
+; Set the default client function
+[HKEY_LOCAL_MACHINE\Drivers\USB\FunctionDrivers]
+   "DefaultClientDriver"=- ; erase previous default
+
+
+;------------ USB Function Serial Driver --------------------------------------
+IF BSP_USBFNCLASS == SERIAL
+[HKEY_LOCAL_MACHINE\Drivers\USB\FunctionDrivers]
+; //[david.modify] 2008-06-14 12:01
+;;	"DefaultClientDriver"="Mass_Storage_Class"
+	"DefaultClientDriver"="Serial_Class"
+ENDIF BSP_USBFNCLASS	
+
+[HKEY_CURRENT_USER\ControlPanel\Comm]
+	"Cnct"="`USB"	
+
+;-------------------------------------------------------------------------	
+
+;------------ USB Function Mass Stroge Driver ---------------------------------
+IF BSP_USBFNCLASS == MASS_STORAGE
+[HKEY_LOCAL_MACHINE\Drivers\USB\FunctionDrivers]
+	"DefaultClientDriver"="Mass_Storage_Class"
+
+ENDIF BSP_USBFNCLASS
+;-------------------------------------------------------------------------
+
+[HKEY_LOCAL_MACHINE\Drivers\USB\FunctionDrivers\Serial_Class]
+	"FriendlyName"=LOC_USBFN_SERIAL_NAME
+	"idVendor"=dword:0547
+	"Manufacturer"=LOC_USBFN_SERIAL_MANUFACTURER
+	"idProduct"=dword:2720
+	"Product"=LOC_USBFN_SERIAL_PRODUCT
+;;	 //[david.modify] 2008-08-22 16:05
+;; ²»Òª³åÍ»ÁË
+	"Index"=dword:5
+
+
+
+[HKEY_LOCAL_MACHINE\Drivers\USB\FunctionDrivers\Mass_Storage_Class]
+"Dll"="usbmsfn.dll"
+"InterfaceSubClass"=dword:06
+"InterfaceProtocol"=dword:50
+; "DeviceName"="DSK3:"
+"FriendlyName"="Mass Storage"
+"idVendor"=dword:045E
+"Manufacturer"="Generic Manufacturer (PROTOTYPE--Remember to change idVendor)"
+"idProduct"=dword:FFFF
+"Product"="Generic Mass Storage (PROTOTYPE--Remember to change idVendor)"
+"bcdDevice"=dword:0
+; "Removable"=dword:0
+; for Multi Device configurations
+; //[david.modify] 2008-07-30 16:29
+;; 4->2
+"NumberofDevice"=dword:2
+
+; pure NAND #1
+"DeviceName[0]"="DSK1:"
+"Removable[0]"=dword:0
+; SD #1
+"DeviceName[1]"="DSK3:"
+"Removable[1]"=dword:1 
+
+
+; //[david.modify] 2008-07-29 19:23
+;"DeviceName"="DSK1:"
+;"Removable"=dword:0
+
+;IF 0
+; pure NAND #1
+;"DeviceName[0]"="DSK1:"
+;"Removable[0]"=dword:0
+; pure NAND #2
+;"DeviceName[1]"="DSK2:"
+;"Removable[1]"=dword:0
+;SD #1
+;"DeviceName[2]"="DSK4:"
+;"Removable[2]"=dword:1
+;SD #2
+;"DeviceName[3]"="DSK3:"
+;"Removable[3]"=dword:1
+;ENDIF
+
+
+[HKEY_LOCAL_MACHINE\DebugZones]
+	"USBFN"=dword:ffff
+	"Serial"=dword:ffff
+	"PM"=dword:ffff
+
+ENDIF
+ENDIF BSP_NOUSBFN !
+; @CESYSGEN ENDIF CE_MODULES_USBFN
+;-------------------------------------------------------------------------
+
+;================= USB =================
+; @CESYSGEN IF CE_MODULES_USBD
+IF BSP_NOUSB !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\OHCI]
+   "InterfaceType"=dword:0     ; Internal
+   "Prefix"="HCD"
+;    //[david.modify] 2008-08-06 14:12
+;;È¥³ýÓÃ²»ÉÏµÄohci2.dll
+   "Dll"="ohci2_del.dll"
+   "Index"=dword:1
+   ;"Order"=dword:1 		;2
+   "Order"=dword:25
+   "Irq"=dword:1a		; 26
+   "SysIntr"=dword:11		; (SYSINTR_FIRMWARE+1)
+   "MemBase"=dword:49000000
+   "MemLen"=dword:1000
+   "UseExistingSettings"=dword:0
+   "HcdCapability"=dword:4      ;HCD_SUSPEND_ON_REQUEST
+ENDIF
+
+;============= End of USB =================
+; @CESYSGEN ENDIF CE_MODULES_USBD
+
+IF BSP_NOCS8900 !
+IF BSP_KITL != ETHERNET
+[HKEY_LOCAL_MACHINE\Drivers\CS8900]
+	"Dll"="ndis.dll"
+	"Prefix"="NDS"
+	"Miniport"="CS8900"
+
+[HKEY_LOCAL_MACHINE\Comm\CS8900]
+	"DisplayName"="CS8900"
+	"Group"="NDIS"
+	"ImagePath"="CS8900.dll"
+
+[HKEY_LOCAL_MACHINE\Comm\CS8900\Linkage]
+	"Route"=multi_sz:"CS89001"
+
+[HKEY_LOCAL_MACHINE\Comm\CS89001]
+	"DisplayName"="CS8900"
+	"Group"="NDIS"
+	"ImagePath"="CS8900.dll"
+
+[HKEY_LOCAL_MACHINE\Comm\CS89001\Parms]
+	"BusNumber"=dword:0
+	"BusType"=dword:0
+	"InterruptNumber"=dword:25
+	"IoBaseAddress"=dword:A7000300
+	"Transceiver"=dword:3
+	"CardType"=dword:1
+
+[HKEY_LOCAL_MACHINE\Comm\CS89001\Parms\TcpIp]
+	"EnableDHCP"=dword:1
+	"DefaultGateway"="0.0.0.0"
+	"LLInterface"=""
+	"UseZeroBroadcast"=dword:0
+	"IpAddress"="0.0.0.0"
+	"Subnetmask"="0.0.0.0"
+	"DNS"="0.0.0.0"
+
+[HKEY_LOCAL_MACHINE\Comm\Tcpip\Linkage]
+	"Bind"="CS89001"
+ENDIF
+ENDIF ; BSP_CS8900
+
+
+IF BSP_NOBACKLIGHT !
+; backlight driver
+;; //[david.modify] 2008-05-22 11:41 ½«BAK-->BKL
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\BKL]
+	"Index"=dword:1
+	"Prefix"="BKL"
+;; //[david.modify] 2008-07-18 13:56
+;	"Dll"="backlight2.dll"
+	"Dll"="backlight.dll"
+;;	 //[david.modify] 2008-05-28 14:51
+;; ½«±³¹âÇý¶¯µÄ¼ÓÔØorder ´Ó1-->2
+	"Order"=dword:2
+	"IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"   ; Power-manageable generic
+
+[HKEY_CURRENT_USER\ControlPanel\Backlight]
+; ½«BACKLIGHTµÄÉèÖÃÉè³ÉºÍ43B»úÆ÷Ò»ÑùµÄ
+;===========================================
+;	"ACTimeout"=dword:3c
+;	"BatteryTimeout"=dword:1e
+	"ACTimeout"=dword:ffffffff
+	"BatteryTimeout"=dword:00002710	
+;===========================================	
+	"BacklightOnTap"=dword:1
+	"ACBacklightOnTap"=dword:1
+;;	 //[david.modify] 2008-07-18 12:04
+;; È±Ê¡±³¹â²ÎÊý
+	"Lightness"=dword:50
+;	 //[david.modify] 2008-08-20 10:34
+"BacklightCurrentLevel"=dword:7		;Backlight level
+"BacklightTotalLevels"=dword:a		;Backlight total levels 	
+
+[HKEY_CURRENT_USER\ControlPanel\BackLight]
+    "AdvancedCPL" = "AdvBacklight"
+ENDIF ; BSP_NOBACKLIGHT
+
+
+; @CESYSGEN ENDIF CE_MODULES_DEVICE
+
+
+
+
+; HIVE BOOT SECTION
+
+[HKEY_LOCAL_MACHINE\System\StorageManager]
+;;reduce time to disppear disk label
+;; //[david.modify] 2008-08-13 20:10 as same as atlassiii
+"Dll"="fsdmgr.dll"
+;;
+;;"PNPUnloadDelay"=dword:100
+;; //[david.modify] 2008-09-20 17:04 
+"PNPUnloadDelay"=dword:1000
+"PNPWaitIODelay"=dword:9c4
+
+
+; @CESYSGEN IF CE_MODULES_SDMEMORY
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\SDMemory]
+    "Name"="SD Memory Card"
+;; //[david.modify] 2008-05-30 15:48
+;;¸Ä³ÉºÍAPÒ»ÑùµÄ
+;    "Folder"="Storage Card"
+    "Folder"="SDMMC"
+    ;"PartitionDriver"=""          ; removable storage cannot have partitions
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\MMC]
+    "Name"="MMC Card"
+;; //[david.modify] 2008-05-30 15:48
+;;¸Ä³ÉºÍAPÒ»ÑùµÄ
+;    "Folder"="Storage Card"
+    "Folder"="SDMMC"
+    ;"PartitionDriver"=""          ; removable storage cannot have partitions
+
+; SD Memory Storage class driver
+[HKEY_LOCAL_MACHINE\Drivers\SDCARD\ClientDrivers\Class\SDMemory_Class]
+   "Dll"="SDMemory.dll"
+   "Prefix"="DSK"
+;   //[david.modify] 2008-06-10 11:22
+;   "Index"=dword:4
+   "Index"=dword:3
+   "BlockTransferSize"=dword:40  ; send no more than 64 blocks of data per bus transfer
+   ;"SingleBlockWrites"=dword:1  ; alternatively force the driver to use single block access
+   ;"IdleTimeout"=dword:7D0      ; 2000 milliseconds
+   ;"IdlePowerState"=dword:2     ; 0 == D0, 1 == D1, etc.
+   ;"DisablePowerManagement"=""  ; if value present, then disable (remove value to enable)
+   "Profile"="SDMemory"
+   "IClass"=multi_sz:"{A4E7EDDA-E575-4252-9D6B-4195D48BB865}",
+                     "{8DD679CE-8AB4-43c8-A14A-EA4963FAA715}"
+
+;; //[david.modify] 2008-07-15 17:04
+[HKEY_LOCAL_MACHINE\Drivers\SDCARD\ClientDrivers\Class\SDMemory_Class\High_Capacity]
+"Index"=dword:3
+
+; MMC Storage Class Driver
+[HKEY_LOCAL_MACHINE\Drivers\SDCARD\ClientDrivers\Class\MMC_Class]
+   "Dll"="SDMemory.dll"
+   "Prefix"="DSK"
+;   //[david.modify] 2008-06-10 11:22
+;   "Index"=dword:4
+   "Index"=dword:3
+   "BlockTransferSize"=dword:40  ; send no more than 64 blocks of data per bus transfer
+   ;"SingleBlockWrites"=dword:1  ; alternatively force the driver to use single block access
+   ;"IdleTimeout"=dword:7D0      ; milliseconds
+   ;"IdlePowerState"=dword:2     ; 0 == D0, 1 == D1, etc.
+   ;"DisablePowerManagement"=""  ; if value present, then disable (remove value to enable)
+   "Profile"="MMC"
+   "IClass"=multi_sz:"{A4E7EDDA-E575-4252-9D6B-4195D48BB865}",
+                     "{8DD679CE-8AB4-43c8-A14A-EA4963FAA715}"
+; @CESYSGEN ENDIF CE_MODULES_SDMEMORY
+
+
+IF BSP_NONANDFS !
+[HKEY_LOCAL_MACHINE\System\StorageManager\AutoLoad\SMFlash]
+	"DriverPath"="Drivers\\BlockDevice\\SMFlash"
+	"LoadFlags"=dword:1
+	"MountFlags"=dword:11
+	"BootPhase"=dword:0
+;; //[david.modify] 2008-04-16 10:40
+"Flags"=dword:1000 ; Õâ¸öflag±êÇ©ÈÃÄãµÄÇý¶¯²»»áÖØ¸´¼ÓÔØ£¬ÏÂÃæÀàËÆ
+;; //[david. end] 2008-04-16 10:40	
+
+[HKEY_LOCAL_MACHINE\Drivers\BlockDevice\SMFlash]
+	"Prefix"="DSK"
+	"Dll"="BIBDrv.dll"
+	"Order"=dword:0
+	"Ioctl"=dword:4
+	"Profile"="SMFlash"
+	"FriendlyName"="Samsung Flash Driver"
+	"MountFlags"=dword:11
+	"BootPhase"=dword:0
+;; //[david.modify] 2008-04-16 10:40
+;;"Flags"=dword:1000 ; Õâ¸öflag±êÇ©ÈÃÄãµÄÇý¶¯²»»áÖØ¸´¼ÓÔØ£¬ÏÂÃæÀàËÆ
+;; //[david. end] 2008-04-16 10:40	
+
+; Bind BINFS to the block driver
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\SMFlash]
+	"DefaultFileSystem"="BINFS"
+	"PartitionDriver"="mspart.dll"
+	"AutoMount"=dword:1
+;;	 //[david.modify] 2008-07-15 17:05
+;;	"AutoPart"=dword:1
+	"MountFlags"=dword:11
+	"Folder"="ResidentFlash"
+	"Name"="Samsung Flash Disk"
+	"BootPhase"=dword:0
+;;	 //[david.modify] 2008-04-16 10:42
+"MountHidden"=dword:0 ;ÓÐÁËÕâ¸öÄã¾Í¿ÉÒÔÔÚ/BINFSÄ¿Â¼ÏÂ¿´µ½ËùÓÐµÄNK.binµÄ¶«¶«ÁË VH1c)FI  	
+;; //[david. end] 2008-04-16 10:42	
+
+
+
+
+ENDIF ; BSP_NONANDFS
+; END HIVE BOOT SECTION
+
+; @CESYSGEN IF CE_MODULES_DISPLAY
+IF BSP_NODISPLAY !
+[HKEY_LOCAL_MACHINE\System\GDI\Drivers]
+    "Display"="S3C2450DISP.dll"
+    "DisplayPowerClass"="{EB91C7C9-8BF6-4a2d-9AB8-69724EED97D1}"    
+    
+; Settings to rotate the screen by 0 degrees clockwise upon download
+[HKEY_LOCAL_MACHINE\System\GDI\Rotation]
+    "Angle"=dword:0
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\State\UserIdle\{EB91C7C9-8BF6-4a2d-9AB8-69724EED97D1}]
+	"Default"=dword:0           ; D4	set Display on when useridle
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\State\SystemIdle\{EB91C7C9-8BF6-4a2d-9AB8-69724EED97D1}]
+	"Default"=dword:0           ; D4	set Display on when systemidle
+
+
+ENDIF BSP_NODISPLAY !
+; @CESYSGEN ENDIF CE_MODULES_DISPLAY
+
+; ----------------------------------------------------------------------------
+; Select a Direct3D Mobile Driver
+
+; @CESYSGEN IF DIRECTX_MODULES_D3DM
+IF BSP_D3DM_NULL
+IF BSP_D3DM_NULL_REMOTE
+[HKEY_LOCAL_MACHINE\System\D3DM\Drivers]
+   "RemoteHook"="d3dm_nulldrv.dll"
+ELSE
+[HKEY_LOCAL_MACHINE\System\D3DM\Drivers]
+   "LocalHook"="d3dm_nulldrv.dll"
+ENDIF BSP_D3DM_NULL_REMOTE
+ELSE
+[HKEY_LOCAL_MACHINE\System\D3DM\Drivers]
+   "LocalHook"="d3dm_sedrv.dll"
+ENDIF BSP_D3DM_NULL
+; @CESYSGEN ENDIF DIRECTX_MODULES_D3DM
+
+IF BSP_NOCFATAPI !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\2450_CF]
+	"Prefix"="IDE"
+IF BSP_SMDK2443_CFG
+	"Dll"="s3c2443_cf_atapi.dll"
+ENDIF BSP_SMDK2443_CFG
+IF BSP_SMDK2450_CFG
+	"Dll"="s3c2450_cf_atapi.dll"
+ENDIF BSP_SMDK2450_CFG
+	"Order"=dword:3
+	"Class"=dword:01
+	"SubClass"=dword:01
+	"ConfigEntry"="GenericConfig"   ; PCI configuration entry point ;;maybe not required
+	"Legacy"=dword:01               ; legacy, use Irq for primary and Irq+1 for secondary ;;maybe not required
+	"Irq"=dword:13                  ; 48 
+	"SysIntr"=dword:00              ; SysIntr not specified
+	"DMAAlignment"=dword:04         ; default DMA alignment
+	"SoftResetTimeout"=dword:5      ; ATA/ATAPI spec defines 31s ceiling; this is too long
+	"StatusPollCycles"=dword:100    ; Status register DRQ/BSY polling; 256 poll cycles
+	"StatusPollsPerCycle"=dword:20  ; Status register DRQ/BSY polling; 32 polls per cycle
+	"StatusPollCyclePause"=dword:05 ; Status register DRQ/BSY polling; 5 milliseconds between poll cycles
+	"IoBase"=multi_sz:"0x4B800000","0x4B800000"
+	"IoLen"=multi_sz:"0x1998","0x1998"
+	"RegisterStride"=dword:4       ; Ref. Board ATA register stride; register block is word-contiguous
+	"InterfaceType"=dword:0     	   ; Internal
+	"DeviceControlOffset"=dword:20
+	"AlternateStatusOffset"=dword:20
+	"DeviceId"=dword:00    
+	"SpawnFunction"="CreateRomi"   ; Reference Board specific instantiation function
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\2450_CF\Device0]
+    "Prefix"="DSK"
+   	"Dll"="s3c2450_cf_atapi.dll"
+    "Index"=dword:0
+    "Order"=dword:3
+	"IClass"=multi_sz:"{A4E7EDDA-E575-4252-9D6B-4195D48BB865}",
+                     "{8DD679CE-8AB4-43c8-A14A-EA4963FAA715}"
+    "InterruptDriven"=dword:00      ; en(1) dis(0)able interrupt driven I/O
+    "DMA"=dword:00                  ; disable DMA. DMA is not supported
+    "DoubleBufferSize"=dword:10000  ; 128 sector (65536 byte) double buffer
+    "DrqDataBlockSize"=dword:200    ; 1 sector (512 byte) DRQ data block
+    "WriteCache"=dword:01           ; enable on-disk write cache
+    "LookAhead"=dword:01            ; enable on-disk look-ahead
+    "DeviceId"=dword:00             ; device 0, i.e., primary master
+    "TransferMode"=dword:ff          ; use mode 0;
+    "EnablePDMA"=dword:1 	     ; 0 = PIO, 1 = PDMA. We recommend PDMA mode.
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\2450_CF]
+    "Name"="CF Type Storage"
+    "Folder"="CFDisk"
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\2450_CF\FATFS]
+	;"EnableFatCacheWarm"=dword:0
+
+ENDIF BSP_NOCFATAPI !    
+
+;; //[david.modify] 2008-04-16 10:38 +hive
+;;====================================
+; HIVE BOOT SECTION
+[HKEY_LOCAL_MACHINE\init\BootVars]
+; //[david.modify] 2008-07-29 19:11
+;================
+;"SystemHive"="save\\system.hv"
+;"ProfileDir"="save\\"
+;================
+"Start DevMgr"=dword:1   ;Õâ¸öËµÊÇÆô¶¯device.exe£¬µ«ÊÇwince 5.0ºÃÏñ²»ÓÃÕâ¸ö
+"DefaultUser"="default"     ;ÔÛÃÇÖ»ÓÐÒ»¸öÓÃ»§default£¬»ù±¾ÉÏ¾ÍÊÇ¾ö¶¨user.hvµÄÂ·¾¶ÁË
+"Flags"=dword:3 ;Õâ¸öÓ¦¸ÃÊÇwince 5.0ÏÂ¾ö¶¨ÔÚÄÄ¸ö½×¶ÎÆô¶¯device.exeµÄ±íÏî
+;;"RegistryFlags"=dword:1   ;Õâ¸ö¾ÍÊÇÉèÖÃ×¢²á±íÃ¿´Î¸Ä¶¯ºó×Ô¶¯flushµ½system.hv 
+;; //[david. end] 2008-04-16 10:38
+
+
+;; //[david.modify] 2008-06-13 16:49
+[HKEY_LOCAL_MACHINE\init]
+;"Launch50"="explorer.exe"
+"Launch50"="gps2.exe"
+"Depend50"=hex:14,00,1e,00
+
+[HKEY_LOCAL_MACHINE\init]
+"Launch95"="OSD.exe"
+"Depend95"=hex:14,00,1e,00
+;; //[david. end] 2008-06-13 16:49
+
+[HKEY_LOCAL_MACHINE\init]
+ "Launch98"="OVL_Leader.exe"
+ "Depend98"=hex:14,00,1e,00
+ 
+
+; //[david.modify] 2008-09-11 16:51
+; // Ó¦ÓÃ³ÌÐòTCPMPÒôÁ¿µÈ¼¶¿ØÖÆ
+; // 
+[HKEY_LOCAL_MACHINE\init\App]
+;; //[david.modify] 2008-09-16 17:42
+;"volume"=dword:00000014
+"volume"=dword:0000000F
+; //[david.modify] 2008-09-19 15:11
+"volumevalue"="0x0, 0xbb00bb00, 0xbbbbbbbb,0xcc00cc00, 0xcccccccc, 0xdd00dd00, 0xdddddddd, 0xee00ee00,0xeeeeeeee, 0xff00ff00, 0xffffffff"
+
+; //[david.modify] 2008-11-14 14:31
+ÊµÏÖ¶à¹úÓïÑÔ×Ô¶¨Òå»¯.ÐÞ¸Ä×¢²á±í
+;HLM\init\App
+;LanguageSetÖµ
+ 
+;Ä¿Ç°ÕZÑÔ´úÌ–:
+;1 Ó¢ÕZ
+;2 ÖÐº†ów
+;3 ÖÐ·±ów
+;4 ·¨ÕZ
+;5 µÂÓï
+;6 Î÷°àÑÀÓï
+;7 ²¨À¼
+;8 Òâ´óÓï
+;9 ºÉÀ¼
+;10 ÆÏÌÑÑÀ
+;11 ½Ý¿Ë
+;12 Ï£À°
+;13 ÂÞÂíÄáÑÇ
+;14 Á¢ÌÕÍð
+;15 Ì©¹ú
+
+[HKEY_LOCAL_MACHINE\init\App]
+"LanguageSet" ="1,4,5,6,7,8,9,10,11,12,13,14,"
+
+
+
+
+
+
+;;¹Ø±Õ×Ô¶¯½øÈëIDLEºÍSLEEP
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Power\Timeouts]
+"ACUserIdle"=dword:00000000
+"ACSystemIdle"=dword:00000000
+"ACSuspend"=dword:00000000
+"BattUserIdle"=dword:00000000
+"BattSystemIdle"=dword:00000000
+"BattSuspend"=dword:00000000
+"BatteryPoll"=dword:00002710
+
+
+
+;; //[david.modify] 2008-10-08 19:03
+;;=================================
+
+;set BSP_CUSTOMER_DEMO35=10
+;set BSP_CUSTOMER_DEMO43=1010
+;set BSP_CUSTOMER_PBC35=20
+;rem set BSP_CUSTOMER_PBC43=1020
+;set BSP_CUSTOMER_MAXCOM35=30
+;rem set BSP_CUSTOMER_MAXCOM43=1030
+;set BSP_CUSTOMER_LCP35=40
+;set BSP_CUSTOMER_LCP43=1040
+;set BSP_CUSTOMER_JETHMAR35=50
+;set BSP_CUSTOMER_JETHMAR43=1050
+;rem set BSP_CUSTOMER_CHANGTIAN35=60
+;set BSP_CUSTOMER_CHANGTIAN43=1060
+;set BSP_LCD_TYPE=%BSP_LCD_BYD_4281L%
+;set BSP_CUSTOMER=%JETHMAR35%
+
+
+IF BSP_CUSTOMER=10
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+ENDIF
+
+IF BSP_CUSTOMER=1010
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+
+ENDIF
+
+
+IF BSP_CUSTOMER=1010
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+
+ENDIF
+
+IF BSP_CUSTOMER=20
+;;µÂÓï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:407
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:407
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:407
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Central Europe Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:407
+
+ENDIF
+
+IF BSP_CUSTOMER=30
+;;²¨À¼Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:415
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:415
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:415
+
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Central Europe Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:415
+
+ENDIF
+
+IF BSP_CUSTOMER=1030
+;;²¨À¼Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:415
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:415
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:415
+
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Central Europe Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:415
+ENDIF
+
+
+IF BSP_CUSTOMER=40
+;;ÐÙÑÀÀûÓï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:40E
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:40E
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:40E
+
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="E. Europe Standard Time"
+
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:40E
+
+ENDIF
+
+IF BSP_CUSTOMER=1040
+;;ÐÙÑÀÀûÓï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:40E
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:40E
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:40E
+
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="E. Europe Standard Time"
+
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:40E
+
+ENDIF
+
+IF BSP_CUSTOMER=50
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+ENDIF
+
+IF BSP_CUSTOMER=1050
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+ENDIF
+
+
+IF BSP_CUSTOMER=60
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+ENDIF
+
+IF BSP_CUSTOMER=1060
+;;Ó¢Óï
+[HKEY_LOCAL_MACHINE\MUI]
+"SysLang"=dword:409
+[HKEY_LOCAL_MACHINE\nls]
+"DefaultLCID"=dword:409
+[HKEY_LOCAL_MACHINE\nls\overrides]
+"LCID"=dword:409
+[HKEY_LOCAL_MACHINE\Time]
+"CurZoneInfo"="Pacific Standard Time"
+
+[HKEY_LOCAL_MACHINE\init\App]
+"DefaultLangID"=dword:409
+ENDIF
+
+;;=================================
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------------
+; Added by MMS .. 30-SEP-2004
+;----------------------------------------------------------------------------
+IF BSP_POCKETMORY
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\FlashDisk]
+   "Prefix"="DSK"
+   "Dll"="ONDisk.dll"
+   "Order"=dword:1
+   "Index"=dword:2
+   "IClass"=multi_sz:"{A4E7EDDA-E575-4252-9D6B-4195D48BB865}"
+   "Profile"="FlashDisk"
+   "BmlVolumeId"=dword:0	; BML volume ID = 0
+   "BmlPartitionId"=dword:8	; BML parition ID = PARTITION_ID_FILESYSTEM
+   "WMRStartSector"=dword:0
+   "WMRNumOfSector"=dword:10000	; 32MByte
+;   "Flags"=dword:11000	; do not load again in boot phase 2	;
+;;//[david.modify] 2008-04-16 11:02
+       "Flags"=dword:1000
+;;//[david. end] 2008-04-16 11:02
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\FlashDisk]
+    "DefaultFileSystem"="FATFS"
+    "PartitionDriver"="mspart.dll"
+    "Name"="PocketMory MLC Disk"
+    "Folder"="PocketMory"
+    "AutoMount"=dword:1
+    "AutoPart"=dword:1
+    "AutoFormat"=dword:1
+    "MountFlags"=dword:0
+;; //[david.modify] 2008-04-16 11:04
+	"MountAsBootable"=dword:1
+;; //[david. end] 2008-04-16 11:04    
+;    "Ioctl"=dword:4
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\FlashDisk\FATFS]
+    "FriendlyName"="PocketMory FAT FileSystem"
+    "Dll"="fatfsd.dll"
+    "Flags"=dword:00000014			; FATFS_ENABLE_BACKUP_FAT | FATFS_DISABLE_AUTOSCAN
+    "FormatTfat"=dword:1
+    "EnableCacheWarm"=dword:0
+
+;----------------------------------------------------------------------------
+; 2nd FAT Area
+;----------------------------------------------------------------------------
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\FlashDisk1]
+   "Prefix"="DSK"
+   "Dll"="ONDisk.dll"
+   "Order"=dword:1
+   "Index"=dword:1
+   "IClass"=multi_sz:"{A4E7EDDA-E575-4252-9D6B-4195D48BB865}"
+   "Profile"="FlashDisk1"
+   "BmlVolumeId"=dword:0		; BML volume ID = 0
+   "BmlPartitionId"=dword:9	; BML parition ID = PARTITION_ID_FILESYSTEM1
+   "WMRStartSector"=dword:10000
+   "WMRNumOfSector"=dword:ffffffff	; last location
+;   "Flags"=dword:11000	; do not load again in boot phase 2	;
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\FlashDisk1]
+    "DefaultFileSystem"="FATFS"
+    "PartitionDriver"="mspart.dll"
+    "Name"="PocketMory MLC Disk1"
+;; //[david.modify] 2008-05-30 15:48
+;;¸Ä³ÉºÍAPÒ»ÑùµÄ   
+;    "Folder"="PocketMory1"
+    "Folder"="ResidentFlash"
+    
+    "AutoMount"=dword:1
+    "AutoPart"=dword:1
+    "AutoFormat"=dword:1
+    "MountFlags"=dword:0
+;    "Ioctl"=dword:4
+
+[HKEY_LOCAL_MACHINE\System\StorageManager\Profiles\FlashDisk1\FATFS]
+    "FriendlyName"="PocketMory FAT FileSystem1"
+    "Dll"="fatfsd.dll"
+    "Flags"=dword:00000014			; FATFS_ENABLE_BACKUP_FAT | FATFS_DISABLE_AUTOSCAN
+    "FormatTfat"=dword:1
+    "EnableCacheWarm"=dword:0
+
+ENDIF BSP_POCKETMORY
+
+#include "$(_TARGETPLATROOT)\Files\rasbook.reg"
+
+; END HIVE BOOT SECTION
+
+;------------ HS-SPI Driver ------------------------------------------------------------------------------------
+; High Speed SPI Bus Driver
+IF BSP_NOHSSPI !
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Hspi]
+   "Prefix"="HSP"
+   "Dll"="hspi.dll"
+   "Index"=dword:1
+   "Order"=dword:0
+ENDIF BSP_NOHSSPI !
+
+
+
+
+;;; //[david.modify] 2008-04-23 18:33
+;-------------- Battery Driver ----------------------
+; @CESYSGEN IF CE_MODULES_BATTDRVR
+;#include "$(DRIVERS_DIR)\battdrvr\battdrvr.reg"
+IF BSP_NOBATTERY !
+
+; HIVE BOOT SECTION
+
+[HKEY_LOCAL_MACHINE\System\Events]
+    "SYSTEM/BatteryAPIsReady"="Battery Interface APIs"
+
+; END HIVE BOOT SECTION
+
+; These registry entries load the battery driver.  The IClass value must match
+; the BATTERY_DRIVER_CLASS definition in battery.h -- this is how the system
+; knows which device is the battery driver.  Note that we are using 
+; DEVFLAGS_NAKEDENTRIES with this driver.  This tells the device manager
+; to instantiate the device with the prefix named in the registry but to look
+; for DLL entry points without the prefix.  For example, it will look for Init
+; instead of BAT_Init.  This allows the prefix to be changed in the registry (if
+; desired) without editing the driver code.
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\Battery]
+   "Prefix"="BAT"
+;;    //[david.modify] 2008-06-13 14:52
+   "Dll"="battdrvr.dll"
+;;   ÄÜ¹»¿ØÖÆ¶àÉÙ¼ä¸ôÊ±¼ä²éÑ¯BATTERYÒ»´Î   
+;   "PollInterval"=dword:3e8	;1s
+;   "PollInterval"=dword:7d0	;2s	   
+"PollInterval"=dword:1388	;5s	      
+   "Flags"=dword:8                      ; DEVFLAGS_NAKEDENTRIES
+   "Order"=dword:40
+   "IClass"="{DD176277-CD34-4980-91EE-67DBEF3D8913}"
+
+ENDIF BSP_NOBATTERY !
+; @CESYSGEN ENDIF CE_MODULES_BATTDRVR
+;----------------------------------------------------
+;; //[david. end] 2008-04-23 18:34
+
+
+;; //[david.modify] 2008-07-07 09:55
+;; gpsÏà¹ØµÄ×¢²á±í
+;set BSP_GPS_GLONAV4540=100
+;set BSP_GPS_GLONAV7560=101
+;set BSP_GPS_NX3=200
+IF BSP_GPS_TYPE=100
+#include "$(_TARGETPLATROOT)\files\gps.reg"
+ENDIF
+
+IF BSP_GPS_TYPE=101
+#include "$(_TARGETPLATROOT)\files\GPS_GLONAV7560.reg"
+ENDIF
+
+IF BSP_GPS_TYPE=200
+#include "$(_TARGETPLATROOT)\files\gps_nx3.reg"
+ENDIF
+
+
+;;
+
+
+
+
+; ----------- setting for blue tooth -------------------
+IF BSP_BLUETOOTH
+
+IF BSP_FM1182
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\FM1182]
+   "Prefix"="FME"
+   "Dll"="FM1182CTRL.dll"
+   "Order"=dword:1
+   "Index"=dword:1
+ELSE
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\AKM]
+   "Dll"="Ak7742.dll"
+   "Prefix"="AKM"
+   "Index"=dword:0
+   "Order"=dword:7
+ENDIF
+
+IF BSP_SERIALCSR
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\SerialCSR]
+    "Prefix"="CSR"
+    "Dll"="SerialCSR.Dll"
+    "Order"=dword:1                       ; Must be > then actual COM's order value
+    "Index"=dword:1
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\BtScoSnd]
+   "Prefix"="WAV"
+   "Dll"="btscosnd.dll"
+   "Order"=dword:21
+   "Index"=dword:2
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Bluetooth\HCI]
+    "Driver"="bthcsr.dll"
+    "Name"="CSR1:"
+    "baud"=dword:1c200
+    "flags"=dword:4  ;a3 is that
+;    "flags"=dword:1
+    "resetdelay"=dword:1388
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Bluetooth\Sys]
+    "COD"=dword:200408
+
+[HKEY_LOCAL_MACHINE\ExtModems\Bluetooth_dun]
+	"port"="COM8:"
+	"DeviceType"=dword:1
+	"FriendlyName"="Bluetooth DUN on COM8"
+
+IF 0
+;in servers.reg,f.w.lin
+[HKEY_LOCAL_MACHINE\init]
+    "Launch60"="services.exe"
+    "Depend60"=hex:14,00
+
+;pb BT component will create it.
+[HKEY_LOCAL_MACHINE\Services\BTSVC]
+	"Dll"="BTSVC.Dll"
+	"Order"=dword:9
+	"Keep"=dword:1
+	"Prefix"="BTS"
+	"Index"=dword:1
+ENDIF
+
+[HKEY_LOCAL_MACHINE\Services\BTHFSVC]
+	"Dll"="BTHFSVC.DLL"
+	"FriendlyName"="Bluetooth Hands-Free"
+	"Prefix"="BHF"
+	"Order"=dword:9
+	"Keep"=dword:1
+	"Index"=dword:0
+	"IsEnabled"=dword:1
+
+IF BSP_FM1182 ;---++---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Bluetooth\Transports\BuiltIn\1]
+    "Driver"="bthbcsp.dll"
+    "Baud"=dword:1c200
+    "Priority256"=dword:84
+    "PacketSize"=dword:c0
+    "SerialTimeoutConstant"=dword:5
+    "SerialIntervalTimeout"=dword:ffffffff
+    "ReopenDelay"=dword:64
+    "FlashChip"=dword:0
+ELSE          ;---++---
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Bluetooth\Transports\BuiltIn\1]
+    "Driver"="bthbcsp.dll"
+    "flags"=dword:4
+   	"name"="COM7:"  ; Please set this value to correct com port name
+    "baud"=dword:1c200
+    "resetdelay"=dword:1388
+    "Priority256"=dword:132
+    "PacketSize"=dword:192
+    "SerialTimeoutConstant"=dword:1000
+    "SerialIntervelTimeout"=dword:ffffffff
+    "ReopenDelay"=dword:100
+    "FlashChip"=dword:0   ;   1: flash	0:no flash
+ENDIF          ;---++---
+
+ENDIF          ;BSP_SERIALCSR
+
+ENDIF          ;BSP_BLUETOOTH
+; ----------- end setting for blue tooth ---------------
+
+
+
+ //[david.modify] 2008-11-11 11:02
+ // Ôö¼ÓÒ»¸öÇý¶¯ÓÃÓÚ¶ÁÐ´NAND FLASH
+ IF BSP_NOMLC_DAVID !
+;; MLC R/W Driver
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\MLC]
+    "Prefix"="MLC"
+    "Dll"="MLC.DLL"
+    "Order"=dword:20
+    "Index"=dword:0
+;;    "IClass"="{A32942B7-920C-486b-B0E6-92A702A99B35}"   ; Power-manageable generic
+ENDIF BSP_NOMLC_DAVID !  
+
+

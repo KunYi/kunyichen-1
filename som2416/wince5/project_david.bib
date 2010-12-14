@@ -1,0 +1,565 @@
+;
+; Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;
+; Use of this source code is subject to the terms of the Microsoft end-user
+; license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+; If you did not accept the terms of the EULA, you are not authorized to use
+; this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+; install media.
+;
+MODULES
+;  Name            Path                                           Memory Type
+;  --------------  ---------------------------------------------  -----------
+
+
+FILES
+;  Name            Path                                           Memory Type
+;  --------------  ---------------------------------------------  -----------
+
+
+
+;; //[david.modify] 2008-09-07 14:32 3.5inch touch
+IF BSP_DISPLAY_WIDTH=320
+IF BSP_DISPLAY_HEIGHT=240
+
+;;BSP_GPS_APP=3 -- iphone ui
+IF BSP_GPS_APP=3
+#define GPS_APP_DIR $(_TARGETPLATROOT)\files\iphone35
+ELSE
+#define GPS_APP_DIR $(_TARGETPLATROOT)\files\tcpmp35
+ENDIF
+
+ENDIF
+ENDIF
+
+IF BSP_DISPLAY_WIDTH=480
+IF BSP_DISPLAY_HEIGHT=272
+#define GPS_APP_DIR $(_TARGETPLATROOT)\files\tcpmp43
+ENDIF
+ENDIF
+
+
+;; //[david.modify] 2008-06-11 15:29
+;;  添加GPS应用所要的DLL
+;;IF BSP_NOAPPDLL !
+NaviAPI.dll $(GPS_APP_DIR)\NaviAPI.dll $(DRIVERS) H
+NaviService.dll $(GPS_APP_DIR)\NaviService.dll $(DRIVERS) H
+;;ENDIF BSP_NOAPPDLL !
+
+
+
+IF BSP_CUSTOMER=10
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+
+GPS2.exe $(LANGUAGE_DIR)\demo35\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\demo35\Sleep_bg.bmp $(DRIVERS) 
+ENDIF
+
+
+IF BSP_CUSTOMER=1010
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\demo43\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\demo43\Sleep_bg.bmp $(DRIVERS) 
+ENDIF
+
+
+;JETHMAR35
+IF BSP_CUSTOMER=50
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\JETHMAR35\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\JETHMAR35\Sleep_bg.bmp $(DRIVERS) 
+Set_Bkg.BMP $(LANGUAGE_DIR)\JETHMAR35\Set_Bkg.BMP $(DRIVERS) 
+ENDIF
+
+;JETHMAR43
+IF BSP_CUSTOMER=1050
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\JETHMAR43\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\JETHMAR43\Sleep_bg.bmp $(DRIVERS) 
+Set_Bkg.BMP $(LANGUAGE_DIR)\JETHMAR43\Set_Bkg.BMP $(DRIVERS) 
+ENDIF
+
+
+;;BSP_CUSTOMER_CHANGTIAN43
+IF BSP_CUSTOMER=1060
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\CHANGTIAN43\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\Sleep_bg.bmp $(DRIVERS) 
+music_bkg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\music_bkg.bmp $(DRIVERS) 
+photo_bkg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\photo_bkg.bmp $(DRIVERS) 
+S-01-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-01-1.bmp $(DRIVERS) 
+S-01.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-01.bmp $(DRIVERS) 
+S-02-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-02-1.bmp $(DRIVERS) 
+S-02.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-02.bmp  $(DRIVERS) 
+S-03-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-03-1.bmp $(DRIVERS) 
+S-03.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-03.bmp $(DRIVERS) 
+S-04-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-04-1.bmp  $(DRIVERS) 
+S-04.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-04.bmp $(DRIVERS) 
+S-05-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-05-1.bmp $(DRIVERS) 
+S-05.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-05.bmp $(DRIVERS) 
+S-06-1.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-06-1.bmp $(DRIVERS) 
+S-06.bmp $(LANGUAGE_DIR)\CHANGTIAN43\S-06.bmp  $(DRIVERS) 
+
+set_bkg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\set_bkg.bmp $(DRIVERS) 
+submenu_bkg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\submenu_bkg.bmp  $(DRIVERS) 
+sysinfo_bkg.bmp $(LANGUAGE_DIR)\CHANGTIAN43\sysinfo_bkg.bmp $(DRIVERS) 
+
+ENDIF
+
+;pbc35
+IF BSP_CUSTOMER=20
+
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language\pbc35
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\Sleep_bg.bmp $(DRIVERS) 
+ENDIF
+
+;maxcom35
+IF BSP_CUSTOMER=30
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language\maxcom35
+
+
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+lang_de.txt $(LANGUAGE_DIR)\lang_de.txt $(DRIVERS) H
+lang_es.txt $(LANGUAGE_DIR)\lang_es.txt $(DRIVERS) H
+
+lang_fr.txt $(LANGUAGE_DIR)\lang_fr.txt $(DRIVERS) H
+lang_it.txt $(LANGUAGE_DIR)\lang_it.txt $(DRIVERS) H
+lang_nl.txt $(LANGUAGE_DIR)\lang_nl.txt $(DRIVERS) H
+lang_pl.txt $(LANGUAGE_DIR)\lang_pl.txt $(DRIVERS) H
+lang_ptb.txt $(LANGUAGE_DIR)\lang_ptb.txt $(DRIVERS) H
+
+;; //[david.modify] 2008-09-16 20:05 加入泰文
+lang_th.txt $(LANGUAGE_DIR)\lang_th.txt $(DRIVERS) H
+lang_cht.txt $(LANGUAGE_DIR)\lang_cht.txt $(DRIVERS) H
+lang_chs.txt $(LANGUAGE_DIR)\lang_chs.txt $(DRIVERS) H
+;; //[david.modify] 2008-10-29 10:03 添加捷克_希腊_罗马尼亚_立陶宛四个国家的语言
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_el.txt $(LANGUAGE_DIR)\lang_el.txt $(DRIVERS) H
+lang_lt.txt $(LANGUAGE_DIR)\lang_lt.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\Sleep_bg.bmp $(DRIVERS) 
+
+ENDIF
+
+
+;lcp35
+IF BSP_CUSTOMER==40
+;; //[david.modify] 2008-11-08 09:21 lcp客户只有8国语言
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language\lcp35
+
+lang_bg.txt $(LANGUAGE_DIR)\lang_bg.txt $(DRIVERS) H
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+
+lang_hu.txt $(LANGUAGE_DIR)\lang_hu.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+lang_ru.txt $(LANGUAGE_DIR)\lang_ru.txt $(DRIVERS) H
+lang_sk.txt $(LANGUAGE_DIR)\lang_sk.txt $(DRIVERS) H
+lang_uk.txt $(LANGUAGE_DIR)\lang_uk.txt $(DRIVERS) H
+
+
+games_backgammon_normal.bmp $(LANGUAGE_DIR)\games_backgammon_normal.bmp $(DRIVERS) H
+games_backgammon_up.bmp $(LANGUAGE_DIR)\games_backgammon_up.bmp $(DRIVERS) H
+games_sokoban_normal.bmp $(LANGUAGE_DIR)\games_sokoban_normal.bmp $(DRIVERS) H
+games_sokoban_up.bmp $(LANGUAGE_DIR)\games_sokoban_up.bmp $(DRIVERS) H
+iconx_dictionary_normal.bmp $(LANGUAGE_DIR)\iconx_dictionary_normal.bmp $(DRIVERS) H
+iconx_dictionary_up.bmp $(LANGUAGE_DIR)\iconx_dictionary_up.bmp $(DRIVERS) H
+iconx_ebook_normal.bmp $(LANGUAGE_DIR)\iconx_ebook_normal.bmp $(DRIVERS) H
+iconx_ebook_up.bmp $(LANGUAGE_DIR)\iconx_ebook_up.bmp $(DRIVERS) H
+iconx_games_normal.bmp $(LANGUAGE_DIR)\iconx_games_normal.bmp $(DRIVERS) H
+iconx_games_up.bmp $(LANGUAGE_DIR)\iconx_games_up.bmp $(DRIVERS) H
+iconx_pg_normal.bmp $(LANGUAGE_DIR)\iconx_pg_normal.bmp $(DRIVERS) H
+iconx_pg_up.bmp $(LANGUAGE_DIR)\iconx_pg_up.bmp $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\Sleep_bg.bmp $(DRIVERS) 
+
+PGBoot.exe $(LANGUAGE_DIR)\PGBoot.exe $(DRIVERS) 
+
+ENDIF
+
+
+
+;BSP_CUSTOMER_LCP43
+IF BSP_CUSTOMER==1040
+;; //[david.modify] 2008-11-08 09:21 lcp客户只有8国语言
+#define LANGUAGE_DIR $(_TARGETPLATROOT)\files\language\lcp43
+
+lang_bg.txt $(LANGUAGE_DIR)\lang_bg.txt $(DRIVERS) H
+lang_cs.txt $(LANGUAGE_DIR)\lang_cs.txt $(DRIVERS) H
+lang_en.txt $(LANGUAGE_DIR)\lang_en.txt $(DRIVERS) H
+
+lang_hu.txt $(LANGUAGE_DIR)\lang_hu.txt $(DRIVERS) H
+lang_ro.txt $(LANGUAGE_DIR)\lang_ro.txt $(DRIVERS) H
+lang_ru.txt $(LANGUAGE_DIR)\lang_ru.txt $(DRIVERS) H
+lang_sk.txt $(LANGUAGE_DIR)\lang_sk.txt $(DRIVERS) H
+lang_uk.txt $(LANGUAGE_DIR)\lang_uk.txt $(DRIVERS) H
+
+
+games_backgammon_normal.bmp $(LANGUAGE_DIR)\games_backgammon_normal.bmp $(DRIVERS) H
+games_backgammon_up.bmp $(LANGUAGE_DIR)\games_backgammon_up.bmp $(DRIVERS) H
+games_sokoban_normal.bmp $(LANGUAGE_DIR)\games_sokoban_normal.bmp $(DRIVERS) H
+games_sokoban_up.bmp $(LANGUAGE_DIR)\games_sokoban_up.bmp $(DRIVERS) H
+iconx_dictionary_normal.bmp $(LANGUAGE_DIR)\iconx_dictionary_normal.bmp $(DRIVERS) H
+iconx_dictionary_up.bmp $(LANGUAGE_DIR)\iconx_dictionary_up.bmp $(DRIVERS) H
+iconx_ebook_normal.bmp $(LANGUAGE_DIR)\iconx_ebook_normal.bmp $(DRIVERS) H
+iconx_ebook_up.bmp $(LANGUAGE_DIR)\iconx_ebook_up.bmp $(DRIVERS) H
+iconx_games_normal.bmp $(LANGUAGE_DIR)\iconx_games_normal.bmp $(DRIVERS) H
+iconx_games_up.bmp $(LANGUAGE_DIR)\iconx_games_up.bmp $(DRIVERS) H
+iconx_pg_normal.bmp $(LANGUAGE_DIR)\iconx_pg_normal.bmp $(DRIVERS) H
+iconx_pg_up.bmp $(LANGUAGE_DIR)\iconx_pg_up.bmp $(DRIVERS) H
+
+GPS2.exe $(LANGUAGE_DIR)\GPS2.exe $(DRIVERS) 
+Sleep_bg.bmp $(LANGUAGE_DIR)\Sleep_bg.bmp $(DRIVERS) 
+
+PGBoot.exe $(LANGUAGE_DIR)\PGBoot.exe $(DRIVERS) 
+
+ENDIF
+
+
+
+IF BSP_NOGPSAPP1 !
+GPS1.exe $(GPS_APP_DIR)\GPS1.exe $(DRIVERS) 
+ENDIF BSP_NOGPSAPP1 !
+
+
+IF BSP_NOGPSAPP2 !
+
+S-01-1.bmp $(GPS_APP_DIR)\S-01-1.bmp $(DRIVERS) H 
+S-01.bmp $(GPS_APP_DIR)\S-01.bmp $(DRIVERS) H 
+S-02-1.bmp $(GPS_APP_DIR)\S-02-1.bmp $(DRIVERS) H 
+S-02.bmp $(GPS_APP_DIR)\S-02.bmp $(DRIVERS) H 
+S-03-1.bmp $(GPS_APP_DIR)\S-03-1.bmp $(DRIVERS) H 
+S-03.bmp $(GPS_APP_DIR)\S-03.bmp $(DRIVERS) H 
+S-04-1.bmp $(GPS_APP_DIR)\S-04-1.bmp $(DRIVERS) H 
+S-04.bmp $(GPS_APP_DIR)\S-04.bmp $(DRIVERS) H 
+S-05-1.bmp $(GPS_APP_DIR)\S-05-1.bmp $(DRIVERS) H 
+S-05.bmp $(GPS_APP_DIR)\S-05.bmp $(DRIVERS) H 
+S-06-1.bmp $(GPS_APP_DIR)\S-06-1.bmp $(DRIVERS) H 
+S-06.bmp $(GPS_APP_DIR)\S-06.bmp $(DRIVERS) H 
+set_bkg.bmp $(GPS_APP_DIR)\set_bkg.bmp $(DRIVERS) H 
+music_bkg.bmp $(GPS_APP_DIR)\music_bkg.bmp $(DRIVERS) H 
+photo_bkg.bmp $(GPS_APP_DIR)\photo_bkg.bmp $(DRIVERS) H 
+sysinfo_bkg.bmp $(GPS_APP_DIR)\sysinfo_bkg.bmp $(DRIVERS) H
+
+;;submenu_bkg.bmp  $(GPS_APP_DIR)\submenu_bkg.bmp $(DRIVERS) H
+
+ENDIF BSP_NOGPSAPP2 !
+
+
+OSD.exe	$(GPS_APP_DIR)\OSD.exe      	$(DRIVERS)  
+
+
+common.dll $(GPS_APP_DIR)\common.dll $(DRIVERS) H
+camera.plg $(GPS_APP_DIR)\camera.plg $(DRIVERS) H
+ffmpeg.plg $(GPS_APP_DIR)\ffmpeg.plg $(DRIVERS) H
+mp3.plg $(GPS_APP_DIR)\mp3.plg $(DRIVERS) H
+mpeg1.plg $(GPS_APP_DIR)\mpeg1.plg $(DRIVERS) H
+mpeg4.plg $(GPS_APP_DIR)\mpeg4.plg $(DRIVERS) H
+speex.plg $(GPS_APP_DIR)\speex.plg $(DRIVERS) H
+splitter.plg $(GPS_APP_DIR)\splitter.plg $(DRIVERS) H
+wavpack.plg $(GPS_APP_DIR)\wavpack.plg $(DRIVERS) H
+AAC.PLG $(GPS_APP_DIR)\AAC.PLG $(DRIVERS) H
+AC3.PLG $(GPS_APP_DIR)\AC3.PLG $(DRIVERS) H
+;AVC.PLG $(GPS_APP_DIR)\AVC.PLG $(DRIVERS) H
+
+
+language.tgz $(GPS_APP_DIR)\language.tgz $(DRIVERS) H
+; //[david.modify] 2008-06-20 17:43
+GPS.lnk $(GPS_APP_DIR)\GPS.lnk $(DRIVERS) H
+; //[david. end] 2008-06-20 17:43
+GpsViewer.exe $(GPS_APP_DIR)\GpsViewer.exe $(DRIVERS) 
+;;GN_GPS_Mon.exe $(GPS_APP_DIR)\GpsViewer.exe $(DRIVERS) 
+CStringSpilt.dll $(GPS_APP_DIR)\CStringSpilt.dll $(DRIVERS) H
+
+chinese.htm $(GPS_APP_DIR)\chinese.htm $(DRIVERS) H
+english.htm $(GPS_APP_DIR)\english.htm $(DRIVERS) H
+englishmenual-2.htm $(GPS_APP_DIR)\englishmenual-2.htm $(DRIVERS) H
+englishmenual-3.htm $(GPS_APP_DIR)\englishmenual-3.htm $(DRIVERS) H
+englishmenual-4.htm $(GPS_APP_DIR)\englishmenual-4.htm $(DRIVERS) H
+englishmenual-5.htm $(GPS_APP_DIR)\englishmenual-5.htm $(DRIVERS) H
+englishmenual-6.htm $(GPS_APP_DIR)\englishmenual-6.htm $(DRIVERS) H
+englishmenual-7.htm $(GPS_APP_DIR)\englishmenual-7.htm $(DRIVERS) H
+englishmenual-8.htm $(GPS_APP_DIR)\englishmenual-8.htm $(DRIVERS) H
+englishmenual-9.htm $(GPS_APP_DIR)\englishmenual-9.htm $(DRIVERS) H
+englishmenual-10.htm $(GPS_APP_DIR)\englishmenual-10.htm $(DRIVERS) H
+Untitled-1.htm $(GPS_APP_DIR)\Untitled-1.htm $(DRIVERS) H
+Untitled-2.htm $(GPS_APP_DIR)\Untitled-2.htm $(DRIVERS) H
+Untitled-3.htm $(GPS_APP_DIR)\Untitled-3.htm $(DRIVERS) H
+Untitled-4.htm $(GPS_APP_DIR)\Untitled-4.htm $(DRIVERS) H
+Untitled-5.htm $(GPS_APP_DIR)\Untitled-5.htm $(DRIVERS) H
+Untitled-6.htm $(GPS_APP_DIR)\Untitled-6.htm $(DRIVERS) H
+Untitled-7.htm $(GPS_APP_DIR)\Untitled-7.htm $(DRIVERS) H
+Untitled-8.htm $(GPS_APP_DIR)\Untitled-8.htm $(DRIVERS) H
+Untitled-9.htm $(GPS_APP_DIR)\Untitled-9.htm $(DRIVERS) H
+
+
+
+
+; //[david.modify] 2008-07-04 11:53
+;说明书中的图片
+; //====================
+close.2bp $(GPS_APP_DIR)\close.2bp $(DRIVERS) H
+list.2bp $(GPS_APP_DIR)\list.2bp $(DRIVERS) H
+listadd.2bp $(GPS_APP_DIR)\listadd.2bp $(DRIVERS) H
+listdele.2bp $(GPS_APP_DIR)\listdele.2bp $(DRIVERS) H
+listdown.2bp $(GPS_APP_DIR)\listdown.2bp $(DRIVERS) H
+listup.2bp $(GPS_APP_DIR)\listup.2bp $(DRIVERS) H
+mp3.2bp $(GPS_APP_DIR)\mp3.2bp $(DRIVERS) H
+pause.2bp $(GPS_APP_DIR)\pause.2bp $(DRIVERS) H
+play.2bp $(GPS_APP_DIR)\play.2bp $(DRIVERS) H
+quit.2bp $(GPS_APP_DIR)\quit.2bp $(DRIVERS) H
+rand.2bp $(GPS_APP_DIR)\rand.2bp $(DRIVERS) H
+repeat.2bp $(GPS_APP_DIR)\repeat.2bp $(DRIVERS) H
+step.2bp $(GPS_APP_DIR)\step.2bp $(DRIVERS) H
+Untitled-1_clip_image002.2bp $(GPS_APP_DIR)\Untitled-1_clip_image002.2bp $(DRIVERS) H
+Untitled-1_clip_image004.2bp $(GPS_APP_DIR)\Untitled-1_clip_image004.2bp $(DRIVERS) H
+Untitled-3_clip_image002.2bp $(GPS_APP_DIR)\Untitled-3_clip_image002.2bp $(DRIVERS) H
+Untitled-3_clip_image004.2bp $(GPS_APP_DIR)\Untitled-3_clip_image004.2bp $(DRIVERS) H
+Untitled-3_clip_image006.2bp $(GPS_APP_DIR)\Untitled-3_clip_image006.2bp $(DRIVERS) H
+Untitled-3_clip_image008.2bp $(GPS_APP_DIR)\Untitled-3_clip_image008.2bp $(DRIVERS) H
+Untitled-3_clip_image010.2bp $(GPS_APP_DIR)\Untitled-3_clip_image010.2bp $(DRIVERS) H
+Untitled-3_clip_image012.2bp $(GPS_APP_DIR)\Untitled-3_clip_image012.2bp $(DRIVERS) H
+Untitled-3_clip_image014.2bp $(GPS_APP_DIR)\Untitled-3_clip_image014.2bp $(DRIVERS) H
+Untitled-3_clip_image016.2bp $(GPS_APP_DIR)\Untitled-3_clip_image016.2bp $(DRIVERS) H
+Untitled-3_clip_image018.2bp $(GPS_APP_DIR)\Untitled-3_clip_image018.2bp $(DRIVERS) H
+Untitled-3_clip_image020.2bp $(GPS_APP_DIR)\Untitled-3_clip_image020.2bp $(DRIVERS) H
+Untitled-3_clip_image022.2bp $(GPS_APP_DIR)\Untitled-3_clip_image022.2bp $(DRIVERS) H
+Untitled-3_clip_image024.2bp $(GPS_APP_DIR)\Untitled-3_clip_image024.2bp $(DRIVERS) H
+Untitled-3_clip_image026.2bp $(GPS_APP_DIR)\Untitled-3_clip_image026.2bp $(DRIVERS) H
+Untitled-3_clip_image028.2bp $(GPS_APP_DIR)\Untitled-3_clip_image028.2bp $(DRIVERS) H
+Untitled-3_clip_image030.2bp $(GPS_APP_DIR)\Untitled-3_clip_image030.2bp $(DRIVERS) H
+Untitled-3_clip_image032.2bp $(GPS_APP_DIR)\Untitled-3_clip_image032.2bp $(DRIVERS) H
+Untitled-3_clip_image033.2bp $(GPS_APP_DIR)\Untitled-3_clip_image033.2bp $(DRIVERS) H
+Untitled-3_clip_image035.2bp $(GPS_APP_DIR)\Untitled-3_clip_image035.2bp $(DRIVERS) H
+Untitled-3_clip_image037.2bp $(GPS_APP_DIR)\Untitled-3_clip_image037.2bp $(DRIVERS) H
+Untitled-3_clip_image039.2bp $(GPS_APP_DIR)\Untitled-3_clip_image039.2bp $(DRIVERS) H
+Untitled-3_clip_image041.2bp $(GPS_APP_DIR)\Untitled-3_clip_image041.2bp $(DRIVERS) H
+Untitled-3_clip_image043.2bp $(GPS_APP_DIR)\Untitled-3_clip_image043.2bp $(DRIVERS) H
+Untitled-3_clip_image045.2bp $(GPS_APP_DIR)\Untitled-3_clip_image045.2bp $(DRIVERS) H
+Untitled-3_clip_image047.2bp $(GPS_APP_DIR)\Untitled-3_clip_image047.2bp $(DRIVERS) H
+Untitled-3_clip_image049.2bp $(GPS_APP_DIR)\Untitled-3_clip_image049.2bp $(DRIVERS) H
+Untitled-3_clip_image051.2bp $(GPS_APP_DIR)\Untitled-3_clip_image051.2bp $(DRIVERS) H
+Untitled-3_clip_image057.2bp $(GPS_APP_DIR)\Untitled-3_clip_image057.2bp $(DRIVERS) H
+Untitled-3_clip_image057.2bp $(GPS_APP_DIR)\Untitled-3_clip_image057.2bp $(DRIVERS) H
+Untitled-3_clip_image059.2bp $(GPS_APP_DIR)\Untitled-3_clip_image059.2bp $(DRIVERS) H
+Untitled-4_clip_image002.2bp $(GPS_APP_DIR)\Untitled-4_clip_image002.2bp $(DRIVERS) H
+Untitled-4_clip_image004.2bp $(GPS_APP_DIR)\Untitled-4_clip_image004.2bp $(DRIVERS) H
+Untitled-4_clip_image006.2bp $(GPS_APP_DIR)\Untitled-4_clip_image006.2bp $(DRIVERS) H
+Untitled-4_clip_image008.2bp $(GPS_APP_DIR)\Untitled-4_clip_image008.2bp $(DRIVERS) H
+Untitled-4_clip_image010.2bp $(GPS_APP_DIR)\Untitled-4_clip_image010.2bp $(DRIVERS) H
+Untitled-4_clip_image012.2bp $(GPS_APP_DIR)\Untitled-4_clip_image012.2bp $(DRIVERS) H
+Untitled-4_clip_image014.2bp $(GPS_APP_DIR)\Untitled-4_clip_image014.2bp $(DRIVERS) H
+Untitled-4_clip_image016.2bp $(GPS_APP_DIR)\Untitled-4_clip_image016.2bp $(DRIVERS) H
+Untitled-4_clip_image018.2bp $(GPS_APP_DIR)\Untitled-4_clip_image018.2bp $(DRIVERS) H
+Untitled-5_clip_image002.2bp $(GPS_APP_DIR)\Untitled-5_clip_image002.2bp $(DRIVERS) H
+Untitled-5_clip_image004.2bp $(GPS_APP_DIR)\Untitled-5_clip_image004.2bp $(DRIVERS) H
+Untitled-5_clip_image006.2bp $(GPS_APP_DIR)\Untitled-5_clip_image006.2bp $(DRIVERS) H
+Untitled-5_clip_image008.2bp $(GPS_APP_DIR)\Untitled-5_clip_image008.2bp $(DRIVERS) H
+Untitled-5_clip_image010.2bp $(GPS_APP_DIR)\Untitled-5_clip_image010.2bp $(DRIVERS) H
+Untitled-5_clip_image012.2bp $(GPS_APP_DIR)\Untitled-5_clip_image012.2bp $(DRIVERS) H
+Untitled-5_clip_image014.2bp $(GPS_APP_DIR)\Untitled-5_clip_image014.2bp $(DRIVERS) H
+Untitled-5_clip_image016.2bp $(GPS_APP_DIR)\Untitled-5_clip_image016.2bp $(DRIVERS) H
+Untitled-5_clip_image018.2bp $(GPS_APP_DIR)\Untitled-5_clip_image018.2bp $(DRIVERS) H
+Untitled-5_clip_image020.2bp $(GPS_APP_DIR)\Untitled-5_clip_image020.2bp $(DRIVERS) H
+Untitled-5_clip_image022.2bp $(GPS_APP_DIR)\Untitled-5_clip_image022.2bp $(DRIVERS) H
+Untitled-5_clip_image024.2bp $(GPS_APP_DIR)\Untitled-5_clip_image024.2bp $(DRIVERS) H
+Untitled-5_clip_image026.2bp $(GPS_APP_DIR)\Untitled-5_clip_image026.2bp $(DRIVERS) H
+Untitled-5_clip_image028.2bp $(GPS_APP_DIR)\Untitled-5_clip_image028.2bp $(DRIVERS) H
+Untitled-6_clip_image002.2bp $(GPS_APP_DIR)\Untitled-6_clip_image002.2bp $(DRIVERS) H
+Untitled-6_clip_image004.2bp $(GPS_APP_DIR)\Untitled-6_clip_image004.2bp $(DRIVERS) H
+Untitled-6_clip_image006.2bp $(GPS_APP_DIR)\Untitled-6_clip_image006.2bp $(DRIVERS) H
+Untitled-6_clip_image008.2bp $(GPS_APP_DIR)\Untitled-6_clip_image008.2bp $(DRIVERS) H
+Untitled-6_clip_image010.2bp $(GPS_APP_DIR)\Untitled-6_clip_image010.2bp $(DRIVERS) H
+Untitled-6_clip_image012.2bp $(GPS_APP_DIR)\Untitled-6_clip_image012.2bp $(DRIVERS) H
+Untitled-6_clip_image014.2bp $(GPS_APP_DIR)\Untitled-6_clip_image014.2bp $(DRIVERS) H
+Untitled-6_clip_image016.2bp $(GPS_APP_DIR)\Untitled-6_clip_image016.2bp $(DRIVERS) H
+Untitled-6_clip_image018.2bp $(GPS_APP_DIR)\Untitled-6_clip_image018.2bp $(DRIVERS) H
+Untitled-6_clip_image020.2bp $(GPS_APP_DIR)\Untitled-6_clip_image020.2bp $(DRIVERS) H
+Untitled-6_clip_image022.2bp $(GPS_APP_DIR)\Untitled-6_clip_image022.2bp $(DRIVERS) H
+Untitled-6_clip_image024.2bp $(GPS_APP_DIR)\Untitled-6_clip_image024.2bp $(DRIVERS) H
+Untitled-6_clip_image026.2bp $(GPS_APP_DIR)\Untitled-6_clip_image026.2bp $(DRIVERS) H
+Untitled-7_clip_image002.2bp $(GPS_APP_DIR)\Untitled-7_clip_image002.2bp $(DRIVERS) H
+Untitled-7_clip_image004.2bp $(GPS_APP_DIR)\Untitled-7_clip_image004.2bp $(DRIVERS) H
+Untitled-7_clip_image006.2bp $(GPS_APP_DIR)\Untitled-7_clip_image006.2bp $(DRIVERS) H
+Untitled-7_clip_image008.2bp $(GPS_APP_DIR)\Untitled-7_clip_image008.2bp $(DRIVERS) H
+Untitled-7_clip_image010.2bp $(GPS_APP_DIR)\Untitled-7_clip_image010.2bp $(DRIVERS) H
+Untitled-7_clip_image012.2bp $(GPS_APP_DIR)\Untitled-7_clip_image012.2bp $(DRIVERS) H
+Untitled-7_clip_image013.2bp $(GPS_APP_DIR)\Untitled-7_clip_image013.2bp $(DRIVERS) H
+Untitled-7_clip_image015.2bp $(GPS_APP_DIR)\Untitled-7_clip_image015.2bp $(DRIVERS) H
+Untitled-7_clip_image017.2bp $(GPS_APP_DIR)\Untitled-7_clip_image017.2bp $(DRIVERS) H
+Untitled-7_clip_image019.2bp $(GPS_APP_DIR)\Untitled-7_clip_image019.2bp $(DRIVERS) H
+Untitled-7_clip_image021.2bp $(GPS_APP_DIR)\Untitled-7_clip_image021.2bp $(DRIVERS) H
+Untitled-7_clip_image022.2bp $(GPS_APP_DIR)\Untitled-7_clip_image022.2bp $(DRIVERS) H
+Untitled-7_clip_image023.2bp $(GPS_APP_DIR)\Untitled-7_clip_image023.2bp $(DRIVERS) H
+Untitled-7_clip_image024.2bp $(GPS_APP_DIR)\Untitled-7_clip_image024.2bp $(DRIVERS) H
+Untitled-7_clip_image025.2bp $(GPS_APP_DIR)\Untitled-7_clip_image025.2bp $(DRIVERS) H
+Untitled-7_clip_image026.2bp $(GPS_APP_DIR)\Untitled-7_clip_image026.2bp $(DRIVERS) H
+video.2bp $(GPS_APP_DIR)\video.2bp $(DRIVERS) H
+
+
+
+;; //[david.modify] 2008-11-04 14:09
+;; iphone ui多出来的图片
+;;==============================
+;;BSP_GPS_APP=3 -- iphone ui
+
+IF BSP_GPS_APP=3
+;;button_help.bmp $(GPS_APP_DIR)\button_help.bmp $(DRIVERS) H
+;;button_help.bmp1 $(GPS_APP_DIR)\button_help1.bmp $(DRIVERS) H
+otherbkg.bmp $(GPS_APP_DIR)\otherbkg.bmp $(DRIVERS) H
+Sub_Music_bkg.bmp $(GPS_APP_DIR)\Sub_Music_bkg.bmp $(DRIVERS) H
+Sub_Setting_bkg.bmp $(GPS_APP_DIR)\Sub_Setting_bkg.bmp $(DRIVERS) H
+Video_bkg.BMP $(GPS_APP_DIR)\Video_bkg.BMP $(DRIVERS) H
+Multi_Bkg.BMP $(GPS_APP_DIR)\Multi_Bkg.BMP $(DRIVERS) H
+ENDIF
+
+;;==============================
+
+
+;; //[david.modify] 2008-07-16 15:40
+;; 增加一个EXE用来处理显示提示图片
+OVL_Leader.exe $(GPS_APP_DIR)\OVL_Leader.exe $(DRIVERS) 
+OVL_Leader_Test.exe $(GPS_APP_DIR)\OVL_Leader_Test.exe $(DRIVERS) 
+lowbat_bg.bmp $(GPS_APP_DIR)\lowbat_bg.bmp $(DRIVERS) H
+usb_bg.bmp $(GPS_APP_DIR)\usb_bg.bmp $(DRIVERS) H
+sleep_bg.bmp $(GPS_APP_DIR)\sleep_bg.bmp $(DRIVERS) H
+
+
+
+
+
+
+
+
+
+
+
+
+;  //====================
+
+

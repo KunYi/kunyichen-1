@@ -1,0 +1,12 @@
+LIBRARY BACKLIGHT
+
+EXPORTS BKL_Init
+	    BKL_Deinit
+		BKL_Open
+		BKL_Close 
+		BKL_PowerDown
+		BKL_PowerUp
+		BKL_IOControl
+		GetGPIOInfo2
+		SetGPIOInfo2
+		

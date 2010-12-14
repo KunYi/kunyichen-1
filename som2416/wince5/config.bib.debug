@@ -1,0 +1,61 @@
+;
+; Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;
+; Use of this source code is subject to the terms of the Microsoft end-user
+; license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+; If you did not accept the terms of the EULA, you are not authorized to use
+; this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+; install media.
+;
+
+MEMORY
+    NK      80200000  02700000  RAMIMAGE
+	RAM      82900000  01700000  RAM
+;    NK      80200000  01E00000  RAMIMAGE
+;    RAM     82000000  01E00000  RAM
+;    RAM     82000000  01FE0000  RAM
+;	RAM     82000000  01DE0000  RAM							; FOR POST BUFFER
+    FLASH   92000000  00100000  RESERVED
+
+; Common RAM areas
+	ARGS                80020000  00000800  RESERVED
+	SLEEP               80028000  00002000	RESERVED
+	EDBG                80030000  00020000  RESERVED
+	DISPLAY             80100000  00100000  RESERVED    
+;	POST_BUF	    83DE0000  00200000  RESERVED			; FOR POST BUFFER
+;	CF_DMA_BUF	    83FE0000  00020000  RESERVED
+
+CONFIG
+    COMPRESSION=ON
+    KERNELFIXUPS=ON
+
+IF IMGPROFILER   
+    PROFILE=ON
+ELSE
+    PROFILE=OFF
+ENDIF
+
+;
+; ROMFLAGS is a bitmask of options for the kernel
+;   ROMFLAGS    0x0001      Disallow Paging
+;   ROMFLAGS    0x0002      Not all KMode
+;   ROMFLAGS    0x0010      Trust Module only
+;
+IF IMGTRUSTROMONLY
+    IF IMGNOTALLKMODE
+       ROMFLAGS=12
+    ELSE
+       ROMFLAGS=10
+    ENDIF
+ELSE
+    IF IMGNOTALLKMODE
+       ROMFLAGS=02
+    ELSE
+       ROMFLAGS=00
+    ENDIF
+ENDIF
+
+	ROMSTART = 80200000
+	ROMWIDTH = 32
+	ROMSIZE = 02700000

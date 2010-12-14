@@ -1,0 +1,903 @@
+
+	OPT 2
+
+	INCLUDE kxarm.h
+	INCLUDE s3c2450.inc
+
+	OPT 1
+	OPT 128
+
+; Pre-defined constants.
+
+USERMODE	EQU    0x10
+FIQMODE		EQU    0x11
+IRQMODE	EQU    0x12
+SVCMODE	EQU    0x13
+ABORTMODE	EQU    0x17
+UNDEFMODE	EQU    0x1b
+MODEMASK	EQU    0x1f
+NOINT		EQU    0xc0
+
+; Amount of memory (in bytes) allocated for stacks
+
+Len_FIQ_Stack	EQU    256
+Len_IRQ_Stack	EQU    256
+Len_ABT_Stack	EQU    256
+Len_UND_Stack	EQU    256
+Len_SVC_Stack	EQU    1024
+
+; Offsets will be loaded as immediate values.
+; Offsets must be 8 byte aligned.
+
+Offset_FIQ_Stack	EQU    0
+Offset_IRQ_Stack	EQU    Offset_FIQ_Stack + Len_FIQ_Stack
+Offset_ABT_Stack	EQU    Offset_IRQ_Stack + Len_IRQ_Stack
+Offset_UND_Stack	EQU    Offset_ABT_Stack + Len_ABT_Stack
+Offset_SVC_Stack	EQU    Offset_UND_Stack + Len_UND_Stack
+
+; Stack locations.
+
+FIQStack		EQU    (top_of_stacks - 0x0)				; 0x33ffff00 ~
+IRQStack		EQU    (FIQStack   - Offset_FIQ_Stack)	; 0x33fffe00 ~
+AbortStack	EQU    (IRQStack   - Offset_IRQ_Stack)	; 0x33fffd00 ~
+UndefStack	EQU    (AbortStack - Offset_ABT_Stack)	; 0x33fffc00 ~
+SVCStack	EQU    (UndefStack - Offset_UND_Stack)	; 0x33fffb00 ~
+UserStack	EQU    (SVCStack   - Offset_SVC_Stack)	; 0x33fff700 ~
+
+
+;------------------------------------------------------------------------------
+; Sleep state constants
+;
+; Location of sleep data
+
+; BUGBUG - this needs to be declared as a local var.
+
+SLEEPDATA_BASE_PHYSICAL	EQU    0x30028000
+; WORD_SIZE					EQU    0x4
+; Sleep State memory locations
+
+SleepState_Data_Start		EQU    (0)
+SleepState_WakeAddr		EQU    (SleepState_Data_Start	+ 0)
+SleepState_MMUCTL		EQU    (SleepState_WakeAddr	+ WORD_SIZE)
+SleepState_MMUTTB		EQU    (SleepState_MMUCTL		+ WORD_SIZE)
+SleepState_MMUDOMAIN	EQU    (SleepState_MMUTTB		+ WORD_SIZE)
+SleepState_SVC_SP		EQU    (SleepState_MMUDOMAIN	+ WORD_SIZE)
+SleepState_SVC_SPSR		EQU    (SleepState_SVC_SP		+ WORD_SIZE)
+SleepState_FIQ_SPSR		EQU    (SleepState_SVC_SPSR	+ WORD_SIZE)
+SleepState_FIQ_R8			EQU    (SleepState_FIQ_SPSR	+ WORD_SIZE)
+SleepState_FIQ_R9			EQU    (SleepState_FIQ_R8		+ WORD_SIZE)
+SleepState_FIQ_R10		EQU    (SleepState_FIQ_R9		+ WORD_SIZE)
+SleepState_FIQ_R11		EQU    (SleepState_FIQ_R10		+ WORD_SIZE)
+SleepState_FIQ_R12		EQU    (SleepState_FIQ_R11		+ WORD_SIZE)
+SleepState_FIQ_SP			EQU    (SleepState_FIQ_R12		+ WORD_SIZE)
+SleepState_FIQ_LR			EQU    (SleepState_FIQ_SP		+ WORD_SIZE)
+SleepState_ABT_SPSR		EQU    (SleepState_FIQ_LR		+ WORD_SIZE)
+SleepState_ABT_SP		EQU    (SleepState_ABT_SPSR	+ WORD_SIZE)
+SleepState_ABT_LR		EQU    (SleepState_ABT_SP		+ WORD_SIZE)
+SleepState_IRQ_SPSR		EQU    (SleepState_ABT_LR		+ WORD_SIZE)
+SleepState_IRQ_SP		EQU    (SleepState_IRQ_SPSR	+ WORD_SIZE)
+SleepState_IRQ_LR		EQU    (SleepState_IRQ_SP		+ WORD_SIZE)
+SleepState_UND_SPSR		EQU    (SleepState_IRQ_LR		+ WORD_SIZE)
+SleepState_UND_SP		EQU    (SleepState_UND_SPSR	+ WORD_SIZE)
+SleepState_UND_LR		EQU    (SleepState_UND_SP		+ WORD_SIZE)
+SleepState_SYS_SP		EQU    (SleepState_UND_LR		+ WORD_SIZE)
+SleepState_SYS_LR		EQU    (SleepState_SYS_SP		+ WORD_SIZE)
+SleepState_Data_End		EQU    (SleepState_SYS_LR		+ WORD_SIZE)
+
+SLEEPDATA_SIZE			EQU    (SleepState_Data_End - SleepState_Data_Start) / 4
+
+;---------------------------------------------------------------------------
+;
+; Macro to feed the LED Reg (The GPIO) with the value desired for debugging.
+; Uses physical address
+;
+; GPFDAT [7:4] is assigned to LEDs.
+
+	[BSP_TYPE = BSP_SMDK2443 
+	MACRO
+	LED_ON	$data
+
+	LDR	r10, =GPFUDP
+	LDR     r11, =0x5500	;Pull-Up-Down Disable
+	STR	r11, [r10]
+	
+	LDR	r10, = GPFCON
+	LDR	r11, = (0x5500)	; GPF[7:4] Output .
+	STR	r11, [r10]
+	LDR	r10, =GPFDAT
+	LDR	r11, =$data
+	MOV     r11, r11, lsl #4	; [7:4]
+  	STR	r11, [r10]
+  	MEND
+  	]
+
+
+	IMPORT main		; C entrypoint for Steppingstone loader.
+
+	EXPORT MMU_EnableICache
+ 	EXPORT MMU_SetAsyncBusMode
+
+	STARTUPTEXT
+
+	LEAF_ENTRY StartUp
+
+	b		ResetHandler
+	b		.
+	b		.
+	b		.
+	b		.
+	b		.
+	b		.
+	b		.
+
+
+;----------------------------
+; 1st NAND Bootloader Entry Point
+;----------------------------
+
+ResetHandler
+
+	;------------------------
+	; disable the watchdog timer.
+
+	ldr		r0, =WTCON
+	mov		r1, #0
+	str		r1, [r0]
+
+	
+	;------------------------
+	; EBI configuration
+
+;	ldr		r0, =EBICON			; EBI
+;	ldr		r1, =EBICON_VAL		; Refer s3c2450.inc
+;	str		r1, [r0]
+
+	;-------------------------
+	; Configure GPA data High
+	ldr		r0, = GPACDH
+	ldr r1, = 0x1AA8A      
+	str		r1, [r0]
+    
+	;------------------------
+	; GIPO configuration for LED
+
+	ldr		r0, =GPFCON
+	ldr		r1, =0x5500
+	str		r1, [r0]
+
+	;------------------------
+	; Interrupt configuration
+	[ BSP_TYPE = BSP_SMDK2443 	
+		ldr		r0, =INTMSK			; mask all first-level interrupts.
+		ldr		r1, =0xffffffff
+		str		r1, [r0]
+
+		ldr		r0, =INTSUBMSK		; mask all second-level interrupts.
+		ldr		r1, =0x1fffffff
+		str		r1, [r0]
+
+		ldr		r0, = INTMOD			; set all interrupt as IRQ
+		mov		r1, #0x0
+		str		r1, [r0]
+
+	]
+	[ BSP_TYPE = BSP_SMDK2450 
+	    ldr	r0, =INTMSK1      ; mask all first-level interrupts.
+	    ldr	r1, =0xffffffff
+	    str	r1, [r0]
+
+	    ldr	r0, =INTMSK2      ; mask all first-level interrupts.
+	    ldr	r1, =0xffffffff
+	    str	r1, [r0]
+
+	    ldr	r0, =INTSUBMSK   ; mask all second-level interrupts.
+	    ldr	r1, =0x1fffffff
+	    str	r1, [r0]
+
+	    ldr r0, = INTMOD1
+	    mov r1, #0x0			; set all interrupt as IRQ
+	    str r1, [r0]
+
+	    ldr r0, = INTMOD2
+	    mov r1, #0x0			; set all interrupt as IRQ
+	    str r1, [r0]
+	]
+
+
+	;------------------------
+	; Clock configuration
+
+	ldr		r0, =CLKDIV0			; Set Clock Divider
+	ldr		r1, [r0]
+	bic		r1, r1, #0x37			; clear HCLKDIV, PREDIV, PCLKDIV
+	bic		r1, r1, #(0xf<<9)		; clear ARMCLKDIV
+	ldr		r2, =((Startup_ARMCLKdiv<<9)+(Startup_PREdiv<<4)+(Startup_PCLKdiv<<2)+(Startup_HCLKdiv))
+	orr		r1, r1, r2
+	str		r1, [r0]
+
+	ldr		r0, =LOCKCON0		; Set lock time of MPLL. added by junon
+	mov		r1, #0xe10			; Fin = 12MHz -0x800, 16.9844MHz -0xA00
+	str		r1, [r0]
+
+	ldr		r0,=LOCKCON1		;	Set lock time of EPLL. added by junon
+	mov		r1,#0x800			;	Fin = 12MHz - 0x800, 16.9844MHz - 0xA00
+	str		r1,[r0]	
+
+	ldr		r0, =MPLLCON			; Set MPLL
+	[ BSP_TYPE = BSP_SMDK2443 	
+	ldr		r1,=((0<<24)+(Startup_Mdiv<<16)+(Startup_Pdiv<<8)+(Startup_Sdiv))
+	]
+	[ BSP_TYPE = BSP_SMDK2450 
+	ldr		r1,=((0<<24)+(Startup_Mdiv<<14)+(Startup_Pdiv<<5)+(Startup_Sdiv))
+	]
+	str		r1, [r0]
+
+  	ldr		r0,=EPLLCON			;	Set EPLL
+	ldr		r1,=((0<<24)+(Startup_EMdiv<<16)+(Startup_EPdiv<<8)+(Startup_ESdiv))
+	str		r1,[r0]			
+
+	ldr		r0, =CLKSRC			; Select MPLL clock out for SYSCLK
+	ldr		r1, [r0]
+	orr		r1, r1, #0x50
+	str		r1, [r0]
+
+	;----------------------------
+	; MMU set Asynchonous Bus Mode
+
+	bl		MMU_SetAsyncBusMode
+
+   	;----------------------------
+	; Memory Controller initialize
+
+	bl		InitMEM
+
+   	;----------------------------
+	; SMC initialize
+
+	bl		InitSSMC
+
+   	;----------------------------
+	; Reset Case handling
+
+	ldr		r1, =RSTSTAT
+	ldr		r0, [r1]
+	tst		r0, #0x8
+	beq		%F2					; if not wakeup from PowerOffmode case, Jump to normal booting seauence
+
+   	;------------------------------
+	; Wakeup from PowerOff Mode case
+
+;	ldr		r1, =RSTCON
+;	ldr		r0, [r1]
+;	str		r0, [r1]
+
+    ldr		r1, =WKUPSTAT
+    ldr		r0, [r1]
+    tst		r0, #(1<<1)
+	beq		%f6                     ; if not wakeup from PowerOffmode Skip	
+
+	[ {FALSE}
+	ldr 	r1,=RTCCON
+	ldr		r3,[r1]
+	orr		r3,r3,#0x1
+	str		r3,[r1]
+
+	ldr 	r1,=RTCALM
+	ldr		r3,=0x7f
+	str		r3,[r1]
+	
+	ldr		r1, =BCDSEC
+	ldr		r2, =ALMSEC
+	ldr		r3,[r1]
+	str		r3,[r2]
+
+	ldr		r1, =BCDMIN
+	ldr		r2, =ALMMIN
+	ldr		r3,[r1]
+	str		r3,[r2]	
+
+	ldr		r1, =BCDHOUR
+	ldr		r2, =ALMHOUR
+	ldr		r3,[r1]
+	str		r3,[r2]		
+
+	ldr		r1, =BCDDATE
+	ldr		r2, =ALMDATE
+	ldr		r3,[r1]
+	str		r3,[r2]		
+	
+	ldr		r1, =BCDMON
+	ldr		r2, =ALMMON
+	ldr		r3,[r1]
+	str		r3,[r2]	
+	
+	ldr		r1, =BCDYEAR
+	ldr		r2, =ALMYEAR
+	ldr		r3,[r1]
+	str		r3,[r2]		
+
+	ldr 	r1,=RTCCON
+	ldr		r3,[r1]
+	bic		r3,r3,#0x1
+	str		r3,[r1]
+	]
+
+
+6	
+	
+	[ BSP_TYPE = BSP_SMDK2443 	
+	ldr		r2, =0xE40000		; offset into the RAM	33E4.0000
+	add		r2, r2, #0x33000000	; add physical base
+	]
+
+	[ BSP_TYPE = BSP_SMDK2450 	
+	ldr		r2, =0x200000					; offset into the RAM 
+	add		r2, r2, #0x30000000				; add physical base
+	]
+	mov		pc, r2				; & jump to StartUp address
+	nop
+	nop
+	nop
+	b		.
+
+2  
+
+    ldr		r1, =RSTSTAT
+    ldr		r0, [r1]
+    tst		r0, #(1<<5)
+	beq	BringUpWinCE                     ; if not wakeup from PowerOffmode Skip
+	
+JumpToRAM
+	[ BSP_TYPE = BSP_SMDK2443 	
+	ldr		r2, =0xE40000		; offset into the RAM	33E4.0000
+	add		r2, r2, #0x33000000	; add physical base
+	]
+
+	[ BSP_TYPE = BSP_SMDK2450 	
+	ldr		r2, =0x200000					; offset into the RAM 
+	add		r2, r2, #0x30000000				; add physical base
+	]
+	mov     pc, r2							;  & jump to StartUp address
+	nop
+	nop
+	nop
+	b .
+
+BringUpWinCE
+		[ {TRUE}				; DonGo
+	;--------------------
+	; Clear RAM
+
+	mov		r1,#0
+	mov		r2,#0
+	mov		r3,#0
+	mov		r4,#0
+	mov		r5,#0
+	mov		r6,#0
+	mov		r7,#0
+	mov		r8,#0
+
+	ldr		r0, =0x30000000		; Start address (physical 0x3000.0000).
+	ldr		r9, =0x04000000		; 64MB of RAM.
+20
+	stmia	r0!, {r1-r8}
+	subs		r9, r9, #32
+	bne		%B20
+		]
+
+	;---------------------
+	; Initialize stacks.
+
+30
+	mrs		r0, cpsr
+	bic		r0, r0, #MODEMASK
+
+;	orr		r1, r0, #UNDEFMODE | NOINT
+;	msr		cpsr_cxsf, r1			; UndefMode
+;	ldr		sp, =UndefStack		; UndefStack=0x33FF_5C00
+
+;	orr		r1, r0, #ABORTMODE | NOINT
+;	msr		cpsr_cxsf, r1			; AbortMode
+;	ldr		sp, =AbortStack		; AbortStack=0x33FF_6000
+
+	orr		r1, r0, #IRQMODE | NOINT
+	msr		cpsr_cxsf, r1			; IRQMode
+	ldr		sp, =IRQStack		; IRQStack=0x33FF_7000
+
+;	orr		r1, r0, #FIQMODE | NOINT
+;	msr		cpsr_cxsf, r1			; FIQMode
+;	ldr		sp, =FIQStack			; FIQStack=0x33FF_8000
+
+	bic		r0, r0, #MODEMASK | NOINT
+	orr		r1, r0, #SVCMODE
+	msr		cpsr_cxsf, r1			; SVCMode
+	ldr		sp, =SVCStack		; SVCStack=0x33FF_5800
+
+	;----------------------
+	; Jump to main C routine.
+
+	bl		main
+
+	b 		.
+
+	ENTRY_END
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;------------------------------
+; Sub Routines for Boot Loader
+;-------------------------------
+
+
+	LTORG
+
+	;------------------------
+	; Memory Controller initialize
+
+
+	[ BSP_TYPE = BSP_SMDK2443 	
+InitMEM
+
+	ldr		r0, =GPKCON
+	ldr		r1, =0xaaaaaaaa		; set SDATA[31:16] pin
+	str		r1, [r0]
+
+	;Set SDR Memory parameter control registers
+	;adr		r0, =MEMDATA
+
+	add		r0, pc, #MEMDATA -(.+8)
+	
+	ldr		r1, =BANKCFG
+	add		r2, r0, #16			; end address of MEMDATA
+110
+	ldr		r3, [r0], #4
+	str		r3, [r1], #4			; write BANKCFG, BANKCON1, BANKCON2, BANKCON3
+	cmp		r2, r0
+	bne		%B110
+
+	ldr		r2, =BANKCON1
+	ldr		r1, [r2]
+	bic		r1, r1, #(0x3<<0)
+	orr		r1, r1, #(0x1<<0)		; 4nd : Issue a PALL command (to BANKCON1)
+	str		r1, [r2]
+
+	ldr		r4, =REFRESH			; 5fh : Refresh cycle every 255-clock cycles (to REFRESH)
+	ldr		r0, =0xff
+	str		r0, [r4]
+
+
+
+	mov		r0, #0x100			; 6th : wait 2 auto - clk
+120
+	subs		r0, r0, #1
+	bne		%B120
+
+	bic		r1, r1, #(0x3<<0)
+	orr		r1, r1, #(0x2<<0)		; 7th : Issue a MRS command (to BANKCON1)
+	str		r1, [r2]
+
+	ldr		r4, =REFRESH			; 8fh : Refresh cycle normal (to REFRESH)
+	ldr		r0, =REFCYC
+	str		r0, [r4]
+
+	orr		r1, r1, #(0x3<<0)		; 9th : Issue a EMRS command (to BANKCON1)
+	str		r1, [r2]
+
+	bic		r1, r1, #(0x3<<0) 		; 10th : Issue a Normal mode (to BANKCON1)
+	str		r1,[r2]
+
+	mov		pc, lr
+	]
+
+	[ BSP_TYPE = BSP_SMDK2450 
+	IF :DEF: mSDR
+
+InitMEM
+	
+			;Set GPK port when using x32 bus width.
+				ldr		r0,=GPKCON
+				ldr		r1,=0xaaaaaaaa	; set Sdata[31:16]
+				str		r1, [r0]
+				
+				;Set SDR Memory parameter control registers
+				ldr		r0,=BANKCFG
+				ldr		r1,=BANKCFGVAL 	; set Sdata[31:16]
+				str		r1, [r0]
+
+				ldr		r0,=BANKCON1
+				ldr		r1,=BANKCON1VAL  	; set Sdata[31:16]
+				str		r1, [r0]
+
+
+				ldr		r0,=BANKCON2
+				ldr		r1,=BANKCON2VAL   	; set Sdata[31:16]
+				str		r1, [r0]
+
+				ldr		r0,=BANKCON3
+				ldr		r1,=BANKCON3VAL   	; set Sdata[31:16]
+				str		r1, [r0]
+
+
+
+
+			;				ldr		r2,=RSTSTAT			;
+			;				ldr		r1,[r2]
+			;				cmp 	r1, #0x1	
+			;				bne		GOM		
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x1<<0)			;	4nd	:	Issue a PALL command
+				str		r1,[r2]			
+
+				ldr		r4,=REFRESH			;	5fh : refresh cycle every 255-clock cycles
+				ldr		r0,=0xff
+				str		r0,[r4]					
+				
+				
+				
+				mov	r0, #0x100					;	6th : wait 2 auto - clk
+2				subs	r0, r0,#1;
+				bne	%B02
+
+				bic		r1,r1,#(0x3<<0)			;	7th	:	Issue a MRS command
+				orr		r1,r1,#(0x2<<0)
+				str		r1,[r2]			
+
+				ldr		r4,=REFRESH			;	8fh : refresh  normal
+				ldr		r0,=REFCYC
+				str		r0,[r4]					
+
+				orr		r1,r1,#(0x3<<0)			;	9th	:	Issue a EMRS command
+				str		r1,[r2]			
+
+				bic		r1,r1,#(0x3<<0)			;	10th	:	Issue a Normal mode
+				str		r1,[r2]			
+
+				mov		pc, lr
+
+
+
+				
+	ENDIF
+
+
+	IF :DEF: mDDR
+InitMEM
+				;Set GPK port when using x32 bus width.
+				ldr		r0,=GPKCON
+				ldr		r1,=0xaaaaaaaa	; set Sdata[31:16]
+				str		r1, [r0]
+				
+				;Set DDR Memory parameter control registers
+				ldr		r0,=BANKCFG
+				ldr		r1,=BANKCFGVAL 	; set Sdata[31:16]
+				str		r1, [r0]
+
+				ldr		r0,=BANKCON1
+				ldr		r1,=BANKCON1VAL  	; set Sdata[31:16]
+				str		r1, [r0]
+
+
+				ldr		r0,=BANKCON2
+				ldr		r1,=BANKCON2VAL   	; set Sdata[31:16]
+				str		r1, [r0]
+
+				ldr		r0,=BANKCON3
+				ldr		r1,=BANKCON3VAL   	; set Sdata[31:16]
+				str		r1, [r0]
+
+;				ldr		r2,=RSTSTAT			;
+;				ldr		r1,[r2]
+;				cmp 	r1, #0x1	
+;				bne		GOM		
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x1<<0)			;	4nd	:	Issue a PALL command
+				str		r1,[r2]			
+
+				ldr		r4,=REFRESH			;	5fh : refresh cycle every 255-clock cycles
+				ldr		r0,=0xff
+				str		r0,[r4]					
+				
+				
+				
+				mov	r0, #0x100					;	6th : wait 2 auto - clk
+2				subs	r0, r0,#1;
+				bne	%B02
+
+				bic		r1,r1,#(0x3<<0)			;	7th	:	Issue a MRS command
+				orr		r1,r1,#(0x2<<0)
+				str		r1,[r2]			
+
+				ldr		r4,=REFRESH			;	8fh : refresh  normal
+				ldr		r0,=REFCYC
+				str		r0,[r4]					
+
+				orr		r1,r1,#(0x3<<0)			;	9th	:	Issue a EMRS command
+				str		r1,[r2]			
+
+				bic		r1,r1,#(0x3<<0)			;	10th	:	Issue a Normal mode
+				str		r1,[r2]		
+
+				mov		pc, lr
+
+		ENDIF		
+
+	IF :DEF: DDR2
+InitMEM
+
+				;Set GPK port when using x32 bus width.
+				ldr		r0,=GPKCON
+				ldr		r1,=0xaaaaaaaa	; set Sdata[31:16]
+				str		r1, [r0]
+				
+				;Set DDR2 Memory parameter control registers
+				[{FALSE}
+				add		r0, pc, #MEMDATA -(.+8)
+	
+				ldr		r1, =BANKCFG
+				add		r2, r0, #16			; end address of MEMDATA
+120
+				ldr		r3, [r0], #4
+				str		r3, [r1], #4			; write BANKCFG, BANKCON1, BANKCON2, BANKCON3
+				cmp		r2, r0
+				bne		%B120		
+				]		
+				[{TRUE}
+				ldr		r0,=BANKCFG
+				ldr		r1,=BANKCFGVAL 	; set Sdata[31:16]
+				str		r1, [r0]
+
+				ldr		r0,=BANKCON1
+				ldr		r1,=BANKCON1VAL  	; set Sdata[31:16]
+				str		r1, [r0]
+
+
+				ldr		r0,=BANKCON2
+				ldr		r1,=BANKCON2VAL   	; set Sdata[31:16]
+				str		r1, [r0]
+				]
+
+;				ldr		r2,=RSTSTAT			;
+;				ldr		r1,[r2]
+;				cmp 	r1, #0x1	
+;				bne		GOM			
+
+				ldr		r2,=BANKCON1			;	4nd	:	Issue a PALL command
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x1<<0)			
+				str		r1,[r2]	
+
+				ldr		r2,=BANKCON3			;	5th	:	Issue a EMRS2 command
+				ldr		r3,=0xffff0000
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				orr		r1,r1,#(BA_EMRS2<<30)
+				str		r1,[r2]	
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x3<<0)			
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON3			;	6th	:	Issue a EMRS3 command
+				ldr		r3,=0xffff0000
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				orr		r1,r1,#(BA_EMRS3<<30)
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x3<<0)			
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON3			;	7th	:	Issue a EMRS1 command
+				ldr		r3,=0xffff0000
+				ldr		r4,=((BA_EMRS1<<30)+(RDQS_DIS<<27)+(nDQS_DIS<<26)+(OCD_MODE_EXIT<<23)+(DLL_EN<<16)) 
+				                      ; (0x1<<30)|(0x0<<27)|(0x1<<26)|(0x0<<23)|(0x0<<16)
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				orr		r1,r1,r4
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x3<<0)			
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON3			;	8th	:	Issue a MRS command
+				ldr		r3,=0xffff
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				;orr		r1,r1,#((BA_MRS<<14)+(MRS_E1<<9)+(DLL_RESET_HIGH<<8)+(TM<<7)+(CL_MRS<<4))
+				orr		r1,r1,#((BA_MRS<<14)+(DLL_RESET_HIGH<<8)+(TM<<7)+(CL_MRS<<4))
+				str		r1,[r2]
+				
+				ldr		r2,=BANKCON1				
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x2<<0)			
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON1			;	9nd	:	Issue a PALL command
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x1<<0)			
+				str		r1,[r2]
+
+				ldr		r4,=REFRESH				;	10th : wait 2 auto - clk
+				ldr		r0,=0x20
+				str		r0,[r4]					
+				
+				ldr		r2,=BANKCON3			;	11th	:	Issue a MRS command
+				ldr		r3,=0xffff
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				;orr		r1,r1,#((BA_MRS<<14)+(MRS_E1<<9)+(DLL_RESET_LOW<<8)+(TM<<7)+(CL_MRS<<4))
+				orr		r1,r1,#((BA_MRS<<14)+(DLL_RESET_LOW<<8)+(TM<<7)+(CL_MRS<<4))
+				str		r1,[r2]
+				
+				ldr		r2,=BANKCON1				
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x2<<0)			
+				str		r1,[r2]
+
+				mov	r0, #0x100					;	Wait 200 clock
+2				subs	r0, r0,#1;
+				bne	%B2	
+				
+				ldr		r2,=BANKCON3			;	12th	:	Issue a EMRS1 command For OCD Mode Set to default
+				ldr		r3,=0xffff0000
+				ldr		r4,=((BA_EMRS1<<30)+(RDQS_DIS<<27)+(nDQS_DIS<<26)+(OCD_MODE_DEFAULT<<23)+(DLL_EN<<16))
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				orr		r1,r1,r4
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x3<<0)			
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON3
+				ldr		r3,=0xffff0000
+				;ldr		r4,=((BA_EMRS1<<30)+(RDQS_DIS<<27)+(nDQS_DIS<<26)+(OCD_MODE_EXIT<<23)+(DLL_EN<<16))
+				ldr     r4,=((BA_EMRS1<<30)+(RDQS_DIS<<27)+(nDQS_DIS<<26)+(OCD_MODE_EXIT<<23)+(1<<22)+(0<<18)+(DLL_EN<<16))
+				ldr		r1,[r2]
+				bic		r1,r1,r3
+				orr		r1,r1,r4
+				str		r1,[r2]
+
+				ldr		r2,=BANKCON1
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				orr		r1,r1,#(0x3<<0)			
+				str		r1,[r2]
+				
+				ldr		r4,=REFRESH			;	13fh : refresh  normal
+				ldr		r0,=REFCYC
+				str		r0,[r4]					
+
+				ldr		r2,=BANKCON1		;	14th	:	Issue a Normal mode
+				ldr		r1,[r2]
+				bic		r1,r1,#(0x3<<0)
+				str		r1,[r2]
+
+
+;GOM				mov		pc, lr
+
+			ENDIF
+			]
+	;-----------------------------
+	; Static Memory Controller initialize
+
+InitSSMC
+
+	; Set SMC Memory parameter control registers : AMD Flash
+	ldr		r0, =SMBIDCYR0
+	ldr		r1, =IDCY0
+	str		r1, [r0]
+
+	ldr		r0, =SMBWSTRDR0
+	ldr		r1, =WSTRD0
+	str		r1, [r0]
+
+	ldr		r0, =SMBWSTWRR0
+	ldr		r1, =WSTWR0
+	str		r1, [r0]
+
+	ldr		r0, =SMBWSTOENR0
+	ldr		r1, =WSTOEN0
+	str		r1, [r0]
+
+	ldr		r0, =SMBWSTWENR0
+	ldr		r1, =WSTWEN0
+	str		r1, [r0]
+
+	ldr		r0, =SMBCR0
+	ldr		r1, =(SMBCR0_2+SMBCR0_1+SMBCR0_0)
+	str		r1, [r0]
+	
+	ldr		r0,=SMBWSTBRDR0
+	ldr		r1,=WSTBRD0
+	str		r1,[r0]
+
+	
+	ldr		r0, =SMBWSTBRDR0
+	ldr		r1, =WSTBRD0
+	str		r1, [r0]
+
+	ldr		r0, =SSMCCR
+	ldr		r1, =((MemClkRatio<<1)+(SMClockEn<<0))
+	str		r1, [r0]
+
+	ldr		r0, =SMBWSTRDR5
+	ldr		r1, =0xe
+	str		r1, [r0]
+
+	mov		pc, lr
+
+	LTORG
+
+
+	[ BSP_TYPE = BSP_SMDK2443 	
+MEMDATA	DATA
+		DCD		((RASBW0<<17)+(RASBW1<<14)+(CASBW0<<11)+(CASBW1<<8)+(ADDRCFG0<<6)+(ADDRCFG1<<4)+(MEMCFG<<2)+(BW<<0))
+		DCD		((DQS<<28)+(Reserved0<<26)+(BStop<<7)+(WBUF<<6)+(AP<<5)+(PWRDN<<4)+(BANKINIT<<0))
+		DCD		((tRAS<<20)+(tRC<<16)+(CL<<4)+(tRCD<<2)+(tRP<<0))
+		DCD		((BA_EMRS<<30)+(DS<<21)+(PASR<<16)+(BA_MRS<<14)+(TM<<7)+(CL_MRS<<4))
+	]
+	[ BSP_TYPE = BSP_SMDK2450 
+MEMDATA	DATA
+		DCD		((RASBW0<<17)+(RASBW1<<14)+(CASBW0<<11)+(CASBW1<<8)+(ADDRCFG0<<6)+(ADDRCFG1<<4)+(MEMCFG<<1)+(BW<<0))
+		DCD		((DQSDelay<<28)+(1<<26)+(BStop<<7)+(WBUF<<6)+(AP<<5)+(PWRDN<<4))
+		DCD		((tRAS<<20)+(tARFC<<16)+(CL<<4)+(tRCD<<2)+(tRP<<0))
+		;DCD		((BA_MRS<<14)+(DLL_RESET<<8)+(TM<<7)+(CL_MRS<<4))	
+	]
+
+
+
+
+	
+	;------------------------------------
+	; MMU Cache/TLB/etc on/off functions
+
+R1_I		EQU    (1<<12)
+R1_C	EQU    (1<<2)
+R1_A	EQU    (1<<1)
+R1_M	EQU    (1)
+;R1_iA	EQU    (1<<31)
+;R1_nF	EQU    (1<<30)
+
+	; void MMU_EnableICache(void);
+
+	LEAF_ENTRY	MMU_EnableICache
+
+	mrc		p15, 0, r0, c1, c0, 0
+	orr		r0, r0, #R1_I
+	mcr		p15, 0, r0, c1, c0, 0
+	mov		pc, lr
+
+	; void MMU_SetAsyncBusMode(void);
+	; FCLK:HCLK= 1:2
+
+	LEAF_ENTRY	MMU_SetAsyncBusMode
+	mrc		p15, 0, r0, c1, c0, 0
+	orr		r0, r0, #R1_nF:OR:R1_iA
+	mcr		p15, 0, r0, c1, c0, 0
+	mov 	pc, lr
+
+	END
+

@@ -1,0 +1,54 @@
+;CODEPAGE=1252
+
+; Version 0.70
+; Translation 0.70.1 - 16/11/2005
+
+[IT]	
+LANG0001=Lingua
+LANG0002=Minuto
+LANG0003=Auto Ora d'Estate
+LANG0004=Vietato Ora di Estate
+MAIN0001=Menu Principale
+MAIN0002=Guida
+MAIN0003=Musica
+MAIN0004=Video
+MAIN0005=Foto
+MAIN0006=E-Libro
+MAIN0007=Impostaz
+SETT0001=Volume
+SETT0002=Fonte Ele
+SETT0003=Luce Fon
+SETT0004=Tempo
+SETT0005=Lingua
+SETT0006=Sistema
+VOLM0001=Volume di Auricolare
+VOLM0002=Suono di Tasto
+VOLM0003=Zero
+VOLM0004=Piccolo
+VOLM0005=Grande
+VOLM0006=Volume di Oratore
+POWR0001=Elettricit¨¤
+BKLT0001=Spento in 1 Minuto
+BKLT0002=Spento in 2 Minuti
+BKLT0003=Spento in 5 Minuti
+BKLT0004=Spento in 10 Minuti
+BKLT0005=Spento in 30 Minuti
+BKLT0006=Sempre Acceso
+TIME0001=Data
+TIME0002=Tempo
+TIME0003=Zona T
+TIME0004=Anno
+TIME0005=Mese
+TIME0006=Giorno
+TIME0007=Ora
+MUSC0001=Ripetere 
+MUSC0002=Ordine 
+MUSC0003=Aleatorio 
+MUSC0004=Riproduce
+VERS0001=ID di Dispositivo
+VERS0002=Versione di Sistema
+VERS0003=Non Impostato
+VERS0004=Prova GPS
+VERS0005=Manuale 
+VERS0006=Calibrazione
+ 

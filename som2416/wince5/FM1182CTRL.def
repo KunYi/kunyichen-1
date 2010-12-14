@@ -1,0 +1,15 @@
+; Copyright (c) 2003 Qualnetics Corporation.  All rights reserved.
+LIBRARY 	FM1182CTRL
+
+EXPORTS 
+	FME_Init
+	FME_Deinit
+	FME_Open
+	FME_Close
+	FME_Read
+	FME_Write
+	FME_Seek
+	FME_PowerDown
+	FME_PowerUp
+	FME_IOControl
+	FME_DllEntry

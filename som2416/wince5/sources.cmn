@@ -1,0 +1,58 @@
+!if 0
+Copyright (c) Microsoft Corporation.  All rights reserved.
+!endif
+!if 0
+Use of this source code is subject to the terms of the Microsoft end-user
+license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+If you did not accept the terms of the EULA, you are not authorized to use
+this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+install media.
+!endif
+
+
+WINCEOEM=1
+WINCECPU=1
+NOMIPS16CODE=1
+RELEASETYPE=PLATFORM
+
+_PLATCOMMONLIB=$(_PLATFORMROOT)\common\lib
+
+_COMMONPUBROOT=$(_PUBLICROOT)\common
+__PROJROOT=$(_PROJECTROOT)
+
+_OEMINCPATH=$(_WINCEROOT)\public\common\sdk\inc;
+_OEMINCPATH=$(_OEMINCPATH);$(_WINCEROOT)\public\common\oak\inc;
+_OEMINCPATH=$(_OEMINCPATH);$(_WINCEROOT)\public\common\ddk\inc;
+
+_ISVINCPATH=$(_WINCEROOT)\public\common\sdk\inc;
+
+INCLUDES=$(_TARGETPLATROOT)\src\inc;
+INCLUDES=$(INCLUDES);$(_WINCEROOT)\public\common\oak\drivers\block\msflashfmd\inc
+
+!IF "$(WMR_NAND_SUPPORT)" == "MLC"
+CDEFINES=$(CDEFINES) -DSUPPORTMLC
+!ENDIF
+!IF "$(WMR_NAND_SUPPORT)" == "SLC"
+CDEFINES=$(CDEFINES) -DSUPPORTSLC
+!ENDIF
+##### Define BSP_TYPE #####
+
+#################################
+
+ADEFINES=$(ADEFINES) -pd "BSP_SMDK2443 SETA $(BSP_SMDK2443)"
+ADEFINES=$(ADEFINES) -pd "BSP_SMDK2450 SETA $(BSP_SMDK2450)"
+CDEFINES=$(CDEFINES) -DBSP_SMDK2443=$(BSP_SMDK2443)
+CDEFINES=$(CDEFINES) -DBSP_SMDK2450=$(BSP_SMDK2450)
+
+ADEFINES=$(ADEFINES) -pd "BSP_TYPE SETA $(BSP_TYPE)"
+CDEFINES=$(CDEFINES) -DBSP_TYPE=$(BSP_TYPE)
+
+#//[david.modify] 2008-09-07 11:22
+#//增加一个LCD屏型号: 要求和SMDK2416.BAT中一一对应
+
+ADEFINES=$(ADEFINES) -pd "LCD_MODULE_TYPE SETA $(BSP_LCD_TYPE)"
+CDEFINES=$(CDEFINES) -DLCD_MODULE_TYPE=$(BSP_LCD_TYPE)
+
+#For GPS, f.w.lin
+CDEFINES=$(CDEFINES) -DBSP_GPS_TYPE=$(BSP_GPS_TYPE)
+ 

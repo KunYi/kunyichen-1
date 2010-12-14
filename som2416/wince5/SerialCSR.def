@@ -1,0 +1,15 @@
+; Copyright (c) 2003 Qualnetics Corporation.  All rights reserved.
+LIBRARY 	SerialCSR
+
+EXPORTS 
+	CSR_Init
+	CSR_Deinit
+	CSR_Open
+	CSR_Close
+	CSR_Read
+	CSR_Write
+	CSR_Seek
+	CSR_PowerDown
+	CSR_PowerUp
+	CSR_IOControl
+	CSR_DllEntry

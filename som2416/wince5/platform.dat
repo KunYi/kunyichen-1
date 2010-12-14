@@ -1,0 +1,30 @@
+;
+; Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;
+; Use of this source code is subject to the terms of the Microsoft end-user
+; license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+; If you did not accept the terms of the EULA, you are not authorized to use
+; this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+; install media.
+;
+
+;Root:-Directory("CAM_APP")
+;Directory("\CAM_APP"):-File("camtest.exe","\Windows\camtest.exe")
+;Directory("\CAM_APP"):-File("regedit.exe","\Windows\regedit.exe")
+;Directory(LOC_DIRWINDOWSSTARTUP):-File("GarField.lnk","\windows\GarField.lnk")
+;Directory(LOC_DIRWINDOWSSTARTUP):-File("01first.lnk","\windows\01first.lnk")
+;Directory(LOC_DIRWINDOWSSTARTUP):-File("shrek2.lnk","\windows\shrek2.lnk")
+
+IF BSP_SMDK2450_CFG
+IF BSP_NOTSPCALIBRATE !
+Directory(LOC_DIRWINDOWSSTARTUP):-File("TouchCalibration.exe","\windows\TouchCalibration.exe")
+ENDIF
+ENDIF 
+
+;; //[david.modify] 2008-11-07 09:50 添加一图标在桌面
+Directory("\Windows\LOC_DESKTOP_DIR"):-File("GPS.lnk","\Windows\GPS.lnk")
+Directory("\Windows\LOC_DESKTOP_DIR"):-File("GpsViewer.exe","\Windows\GpsViewer.exe")
+Directory("\Windows\LOC_DESKTOP_DIR"):-File("Setting.exe","\Windows\PNDSET_V1.exe")
+
+

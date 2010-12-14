@@ -1,0 +1,5 @@
+
+1.恢复OSD为以前的状态
+2.恢复OVL_LEADER.exe为以前的状态,在显示u盘模式图片时会Sleep(200)以让视频停止成功.
+但请不要使用以前的OSD和ovl_leader.exe
+3.myshell加中文

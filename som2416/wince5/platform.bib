@@ -1,0 +1,365 @@
+;
+; Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;
+; Use of this source code is subject to the terms of the Microsoft end-user
+; license agreement (EULA) under which you licensed this SOFTWARE PRODUCT.
+; If you did not accept the terms of the EULA, you are not authorized to use
+; this source code. For a copy of the EULA, please see the LICENSE.RTF on your
+; install media.
+;
+
+MODULES
+
+;   Name            		Path                                    Memory Type
+;   --------------  		----------------------------------		-----------
+
+IF IMGMULTIXIP !
+#define NK								NK
+#define DRIVERS							NK
+ENDIF IMGMULTIXIP !
+
+IF IMGMULTIXIP
+IF _TGTPROJ=smartfon
+	#define NK							OEM
+	#define DRIVERS						OEM
+ELSE
+	IF _TGTPROJ=wpc
+		#define NK						XIPKERNEL
+		#define DRIVERS					MISC
+	ELSE
+		#define NK						TINYNK
+		#define DRIVERS					NK
+	ENDIF
+ENDIF
+ENDIF IMGMULTIXIP
+
+
+
+; -----------------------------------------------------------------------------
+; GWES drivers
+;
+; @CESYSGEN IF CE_MODULES_DISPLAY
+IF BSP_NODISPLAY !
+    S3C2450DISP.dll        $(_FLATRELEASEDIR)\S3C2450DISP.dll          $(NK)  SH
+ENDIF BSP_NODISPLAY !
+; @CESYSGEN ENDIF CE_MODULES_DISPLAY
+
+; @CESYSGEN IF CE_MODULES_KEYBD || CE_MODULES_POINTER
+#if ! (defined BSP_NOKEYBD && defined BSP_NOMOUSE)
+IF LOCALE=0411 !
+IF LOCALE=0412 !
+IF BSP_NOKEYBD
+; @CESYSGEN IF CE_MODULES_NOPKEYBOARD
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdNopUs.dll			     $(DRIVERS)  SH
+; @CESYSGEN ENDIF CE_MODULES_NOPKEYBOARD
+ENDIF	; BSP_NOKEYBD
+IF BSP_NOKEYBD !
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdS3C2450Us.dll		     $(DRIVERS)  SH
+ENDIF	; BSP_NOKEYBD
+ENDIF	; LOCALE != 0412
+ENDIF	; LOCALE != 0411
+IF LOCALE=0411
+IF BSP_KEYBD_JPN1
+IF BSP_NOKEYBD
+; @CESYSGEN IF CE_MODULES_NOPKEYBOARD
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdNopJpn1.dll		     $(DRIVERS)  SH
+; @CESYSGEN ENDIF CE_MODULES_NOPKEYBOARD
+ENDIF	; BSP_NOKEYBD
+IF BSP_NOKEYBD !
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdS3C2450Jpn1.dll		 $(DRIVERS)  SH
+ENDIF	; BSP_NOKEYBD
+ENDIF	; BSP_KEYBD_JPN1
+IF BSP_KEYBD_JPN1 !
+IF BSP_NOKEYBD
+; @CESYSGEN IF CE_MODULES_NOPKEYBOARD
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdNopJpn2.dll		     $(DRIVERS)  SH
+; @CESYSGEN ENDIF CE_MODULES_NOPKEYBOARD
+ENDIF	; BSP_NOKEYBD
+IF BSP_NOKEYBD !
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdS3C2450Jpn2.dll		 $(DRIVERS)  SH
+ENDIF	; BSP_NOKEYBD
+ENDIF	; BSP_KEYBD_JPN1
+ENDIF	; LOCALE == 0411
+IF LOCALE=0412
+IF BSP_NOKEYBD
+; @CESYSGEN IF CE_MODULES_NOPKEYBOARD
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdNopKor.dll		     $(DRIVERS)  SH
+; @CESYSGEN ENDIF CE_MODULES_NOPKEYBOARD
+ENDIF	; BSP_NOKEYBD
+IF BSP_NOKEYBD !
+    kbdmouse.dll		    $(_FLATRELEASEDIR)\KbdS3C2450Kor.dll		$(DRIVERS)  SH
+ENDIF	; BSP_NOKEYBD
+ENDIF	; LOCALE == 0412
+#endif ; ! (defined BSP_NOKEYBD && defined BSP_NOMOUSE)
+; @CESYSGEN ENDIF CE_MODULES_KEYBD || CE_MODULES_POINTER
+
+; @CESYSGEN IF CE_MODULES_POINTER
+IF BSP_NOTOUCH !
+    touch.dll      $(_FLATRELEASEDIR)\s3c2450_touch.dll                 $(DRIVERS)  SH
+ENDIF BSP_NOTOUCH !
+; @CESYSGEN ENDIF CE_MODULES_POINTER
+
+; @CESYSGEN IF CE_MODULES_SDBUS
+IF BSP_SMDK2443_CFG
+IF BSP_NOSD !
+   sdhc_s3c2443.dll    $(_FLATRELEASEDIR)\sdhc_s3c2443.dll        $(DRIVERS)  SH
+ENDIF BSP_NOSD !
+
+IF BSP_NOHSMMC !
+   hsmmc_s3c2443.dll    $(_FLATRELEASEDIR)\hsmmc_s3c2443.dll        $(DRIVERS)  SH
+ENDIF BSP_NOHSMMC !
+ENDIF
+
+IF BSP_SMDK2450_CFG
+IF BSP_NOHSMMC_CH0 !
+   s3c2450_hsmmc_ch0.dll    $(_FLATRELEASEDIR)\s3c2450_hsmmc_ch0.dll        $(DRIVERS)  SH
+ENDIF BSP_NOHSMMC_CH0 !
+IF BSP_NOHSMMC_CH1 !
+   s3c2450_hsmmc_ch1.dll    $(_FLATRELEASEDIR)\s3c2450_hsmmc_ch1.dll        $(DRIVERS)  SH
+ENDIF BSP_NOHSMMC_CH1 !
+ENDIF
+
+IF BSP_NONANDFS !
+; -----------------------------------------------------------------------------
+; File system drivers
+;
+   ; This is needed in the NK region because it is needed by BINFS 
+   ; to load other regions
+;   smflash.dll			$(_FLATRELEASEDIR)\smflash.dll			$(DRIVERS) SH
+
+; block driver that binfs interfaces with
+    BIBDrv.dll		$(_FLATRELEASEDIR)\BIBDrv.dll           $(NK)  SH
+ENDIF ; BSP_NONANDFS
+
+; -----------------------------------------------------------------------------
+; Device.exe drivers
+;
+; @CESYSGEN IF CE_MODULES_DEVICE
+; @CESYSGEN IF CE_MODULES_USBD
+IF BSP_NOUSB !
+    ohci2.dll   $(_FLATRELEASEDIR)\ohci2.dll                             $(DRIVERS)  SH
+ENDIF BSP_NOUSB !
+; @CESYSGEN ENDIF CE_MODULES_USBD
+
+; @CESYSGEN IF CE_MODULES_USBFN
+IF BSP_NOUSBFN !
+IF BSP_KITL != USBSERIAL
+   sc2450usbfn.dll       $(_FLATRELEASEDIR)\sc2450usbfn.dll       $(DRIVERS)  SH
+ENDIF
+ENDIF BSP_NOUSBFN !
+; @CESYSGEN ENDIF CE_MODULES_USBFN
+
+; @CESYSGEN IF CE_MODULES_PCCARD
+IF BSP_NOPCCARD !
+    pcc_smdk2450.dll    $(_FLATRELEASEDIR)\pcc_smdk2450.dll              $(DRIVERS)  SH
+    pcc_serv.dll	    $(_FLATRELEASEDIR)\pcc_serv16.dll			     $(DRIVERS)  SH
+    pcmcia.dll			$(_FLATRELEASEDIR)\pcc_pcm.dll			         $(DRIVERS)  SH
+ENDIF BSP_NOPCCARD !
+; @CESYSGEN ENDIF CE_MODULES_PCCARD
+
+; @CESYSGEN IF CE_MODULES_WAVEAPI
+IF BSP_NOAUDIO !
+IF BSP_AUDIO_AC97 !
+    s3c2450_wavedev.dll		$(_FLATRELEASEDIR)\s3c2450_wavedev_iis.dll			$(DRIVERS)	SH
+ENDIF BSP_AUDIO_IIS 
+
+IF BSP_AUDIO_AC97 
+    s3c2450_wavedev.dll		$(_FLATRELEASEDIR)\s3c2450_wavedev_ac97.dll			$(DRIVERS)	SH
+ENDIF BSP_AUDIO_AC97 
+ENDIF BSP_NOAUDIO !
+; @CESYSGEN ENDIF CE_MODULES_WAVEAPI
+
+; @CESYSGEN IF CE_MODULES_SERIAL
+IF BSP_NOSERIAL !
+    serial_smdk2450.dll     $(_FLATRELEASEDIR)\serial_smdk2450.dll       $(DRIVERS)  SH
+
+;added by f.w.lin for bluetooth
+IF BSP_BLUETOOTH
+
+IF BSP_FM1182  ;1111
+	FM1182CTRL.dll			$(_FLATRELEASEDIR)\FM1182CTRL.dll				$(DRIVERS)	SH
+    bthbcsp.dll             $(_TARGETPLATROOT)\files\david\bthbcsp.dll      $(DRIVERS)		SH
+ELSE
+	Ak7742.dll 			    $(_FLATRELEASEDIR)\Ak7742.dll				    $(DRIVERS)	SH
+    bthbcsp.dll             $(_TARGETPLATROOT)\files\david\bthbcsp_AKM.dll      $(DRIVERS)		SH
+ENDIF          ;1111
+
+IF BSP_SERIALCSR
+	serialCSR.dll			$(_FLATRELEASEDIR)\serialCSR.dll				$(DRIVERS)	SH
+	bthfsvc.dll 			$(_TARGETPLATROOT)\files\david\bthfsvc.dll		$(DRIVERS)		SH
+	btsvc.dll  				$(_TARGETPLATROOT)\files\david\btsvc.dll		$(DRIVERS)		SH
+
+FILES
+
+IF BSP_FM1182   ;2222
+	PSConfig.psr			$(_TARGETPLATROOT)\src\DRIVERS\Bluetooth\SerialCSR\PSConfig.psr		$(DRIVERS)	SH
+ELSE
+	PSConfig.psr			$(_TARGETPLATROOT)\src\DRIVERS\Bluetooth\SerialCSR\PSConfig_akm.psr		$(DRIVERS)	SH
+ENDIF           ;2222
+
+MODULES
+
+ENDIF
+ENDIF
+
+ENDIF BSP_NOSERIAL !
+; @CESYSGEN ENDIF CE_MODULES_SERIAL
+
+; @CESYSGEN IF CE_MODULES_BATTDRVR
+IF BSP_NOBATTERY !
+    battdrvr.dll            $(_FLATRELEASEDIR)\battdrvr.dll              $(DRIVERS)  SH
+ENDIF BSP_NOBATTERY !
+; @CESYSGEN ENDIF CE_MODULES_BATTDRVR
+
+; @CESYSGEN IF CE_MODULES_NLEDDRVR
+IF BSP_NONLED !
+    nleddrvr.dll            $(_FLATRELEASEDIR)\nleddrvr.dll              $(DRIVERS)  SH
+ENDIF BSP_NONLED !
+; @CESYSGEN ENDIF CE_MODULES_NLEDDRVR
+
+IF BSP_NOBACKLIGHT !
+    backlight.dll		$(_FLATRELEASEDIR)\backlight.dll					$(DRIVERS)	SH
+    advbacklight.dll		$(_FLATRELEASEDIR)\advbacklight.dll					$(DRIVERS)	SH
+ENDIF ; BSP_NOBACKLIGHT
+
+;-------- I2C Driver ---------------------------------------------------------------------------
+IF BSP_NOI2C !
+	i2c.dll				$(_FLATRELEASEDIR)\i2c.dll	      $(DRIVERS)  SH
+ENDIF BSP_NOI2C !
+;-----------------------------------------------------------------------------------------------
+
+IF BSP_NOPOST !
+    post.dll				$(_FLATRELEASEDIR)\post.dll			$(DRIVERS) SH
+ENDIF BSP_NOPOST !
+
+; @CESYSGEN ENDIF CE_MODULES_DEVICE
+
+
+
+IF BSP_SMDK2443_CFG
+IF BSP_POCKETMORY
+	ONDisk.dll	    $(_FLATRELEASEDIR)\ONDisk.dll			    $(NK)	SH
+ENDIF
+ENDIF
+IF BSP_SMDK2450_CFG
+IF BSP_POCKETMORY
+	ONDisk.dll	    $(_FLATRELEASEDIR)\ONDisk.dll			    $(NK)	SH
+ENDIF
+ENDIF
+
+
+
+
+;-------- 2450 CF ATAPI -----------------------------------------------------------------------
+IF BSP_NOCFATAPI !
+IF BSP_SMDK2443_CFG
+s3c2443_cf_atapi.dll			$(_FLATRELEASEDIR)\s3c2443_cf_atapi.dll 				$(DRIVERS)  SH  
+ENDIF
+IF BSP_SMDK2450_CFG
+s3c2450_cf_atapi.dll			$(_FLATRELEASEDIR)\s3c2450_cf_atapi.dll 				$(DRIVERS)  SH  
+ENDIF
+ENDIF BSP_NOCFATAPI !
+; -----------------------------------------------------------------------------
+
+; Direct3D Mobile Drivers
+IF IMGNOD3DM !
+; @CESYSGEN IF DIRECTX_MODULES_D3DM
+IF BSP_D3DM_NULL
+    d3dm_nulldrv.dll        $(_FLATRELEASEDIR)\d3dm_nulldrv.dll          $(DRIVERS)  SH
+ENDIF BSP_D3DM_NULL
+	d3dm_sedrv.dll        $(_FLATRELEASEDIR)\d3dm_sedrv.dll         		 $(DRIVERS)  SH
+; @CESYSGEN ENDIF DIRECTX_MODULES_D3DM
+ENDIF
+
+; -----------------------------------------------------------------------------
+; SPI driver
+IF BSP_NOHSSPI !
+hspi.dll			$(_FLATRELEASEDIR)\hspi.dll					 $(DRIVERS)	SH
+ENDIF BSP_NOHSSPI !
+; -----------------------------------------------------------------------------
+
+IF BSP_NOPWRBTN !
+    PowerButton.dll          $(_FLATRELEASEDIR)\PowerButton.dll            $(DRIVERS)  SH
+ENDIF BSP_NOPWRBTN !
+
+;; //[david.modify] 2008-11-11 11:11
+IF BSP_NOMLC_DAVID !
+    mlc.dll          $(_FLATRELEASEDIR)\mlc.dll            $(DRIVERS)  SH
+ENDIF BSP_NOMLC_DAVID !  
+
+
+
+;; //[david.modify] 2008-10-20 14:19
+#include "$(_TARGETPLATROOT)\files\project_david.bib"
+;#include "$(_TARGETPLATROOT)\files\project_david_thai.bib"
+
+
+;; //[david.modify] 2008-07-07 09:55
+;; gps相关的注册表
+;set BSP_GPS_GLONAV4540=100
+;set BSP_GPS_GLONAV7560=101
+;set BSP_GPS_NX3=200
+;;===============================================
+IF BSP_GPS_TYPE=100
+#include "$(_TARGETPLATROOT)\files\gps.bib"
+ENDIF
+
+IF BSP_GPS_TYPE=101
+#include "$(_TARGETPLATROOT)\files\GPS_GLONAV7560.bib"
+ENDIF
+
+IF BSP_GPS_TYPE=200
+#include "$(_TARGETPLATROOT)\files\gps_nx3.bib"
+ENDIF
+;;===============================================
+
+FILES
+;  Name            		Path                                        Memory Type
+;  --------------  		----------------------------------          -----------
+;	cpucheck.exe					$(_FLATRELEASEDIR)\cpucheck.exe	 						$(DRIVERS) 	U
+IF BSP_NOCAMERA !
+;	camtest.exe						$(_FLATRELEASEDIR)\camtest.exe	 						$(DRIVERS) 	U
+;	ppc_cam.exe						$(_FLATRELEASEDIR)\ppc_cam.exe	 						$(DRIVERS) 	U
+;	cameratestapp.exe				$(_FLATRELEASEDIR)\cameratestapp.exe	 				$(DRIVERS) 	U
+ENDIF BSP_NOCAMERA !
+
+
+;; //[david.modify] 2008-09-02 15:42
+;;添加一个宏控制是否编译入调试工具，以减小空间
+;;===============================================================
+IF BSP_NODEBUGTOOLS !
+	regedit.exe					$(_FLATRELEASEDIR)\regedit.exe	 						$(DRIVERS) 	U
+;	GarField.wmv					$(_FLATRELEASEDIR)\GarField.wmv	 						$(DRIVERS) 	U
+;	GarField.lnk					$(_FLATRELEASEDIR)\GarField.lnk	 						$(DRIVERS) 	U
+	RotateScreen.exe				$(_FLATRELEASEDIR)\RotateScreen.exe						$(DRIVERS) 	U
+;tre.exe		$(_TARGETPLATROOT)\files\david\tre.exe	$(DRIVERS) U
+s3c2416_gpio_v1.exe		$(_TARGETPLATROOT)\files\david\s3c2416_gpio_v1.exe	$(DRIVERS) U
+cerdisp2.exe		$(_TARGETPLATROOT)\files\david\cerdisp2.exe	$(DRIVERS) U
+KillProc.exe		$(_TARGETPLATROOT)\files\david\KillProc.exe	$(DRIVERS) U
+;touchcalibrate2.exe	$(_TARGETPLATROOT)\files\david\touchcalibrate.exe       	$(DRIVERS)  U
+;RT_Reg5.exe	$(_TARGETPLATROOT)\files\david\RT_Reg5.exe       	$(DRIVERS)  U
+serial2.exe	$(_TARGETPLATROOT)\files\david\serial2.exe       	$(DRIVERS)  U
+VGPSce.exe	$(_TARGETPLATROOT)\files\david\VGPSce.exe       	$(DRIVERS)  U
+PNDSET_V1.exe	$(_TARGETPLATROOT)\files\david\PNDSET_V1.exe       	$(DRIVERS)  U
+
+;;; //[david.modify] 2007-10-19 18:50
+;;; fixbug: 区分中英文版本
+; @BEGINASSOC LOCALE 0409
+;; //[david.modify] 2008-01-02 10:28 - for hopper testing
+devinfo.exe	$(_TARGETPLATROOT)\files\david\ENG_0409_FILES\devinfo.exe		$(DRIVERS) U
+cpl_devinfo.cpl	$(_TARGETPLATROOT)\files\david\ENG_0409_FILES\cpl_devinfo_eng_0409.cpl	$(DRIVERS) S
+; @ENDASSOC
+
+ENDIF BSP_NODEBUGTOOLS !
+;;===============================================================
+
+IF BSP_SMDK2450_CFG
+IF BSP_NOTSPCALIBRATE !
+; //[david.modify] 2008-07-23 14:40
+;	TouchCalibration.exe	$(_FLATRELEASEDIR)\TouchCalibration.exe	 	$(DRIVERS) 	U
+ENDIF
+IF BSP_NOHSSPI !
+;	SPITestApp.exe				$(_FLATRELEASEDIR)\SPITestApp.exe	 				$(DRIVERS) 	U
+ENDIF
+ENDIF 

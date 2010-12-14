@@ -1,0 +1,15 @@
+;
+; Windows CE camera Driver. Written by jabez (mostek@dstcorp.com)
+;
+LIBRARY AK7742
+EXPORTS
+	AKM_Close
+	AKM_Deinit
+	AKM_Init
+	AKM_IOControl
+	AKM_Open
+	AKM_PowerDown
+	AKM_PowerUp
+	AKM_Read
+	AKM_Seek
+	AKM_Write

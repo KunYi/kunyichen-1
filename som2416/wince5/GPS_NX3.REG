@@ -1,0 +1,36 @@
+
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\NX3]
+  "Dll" = "NX3_Drv.dll"
+  "Prefix" = "COM"
+  "FriendlyName" = "NX3 Driver"
+  "Ioctl" = dword:0
+  "Index" = dword:7
+  "HostPort" = dword:6
+  "HostPortConfig" = "4294967295,0,0,0,0"
+  "DownloadSpeed" = "1023000"
+  "ActiveSpeed" = "57600"
+  "LostHostTimeout" = dword:1388
+  "DeadReckoningTimeout" = dword:5
+  "Order" = dword:30
+  "EnableGPSDebug" = dword:0
+  "EnableStartupNmea" = dword:1
+  "EnableSBAS" = dword:1
+  "StoreSystemTime" = dword:1
+  "DSPFile" = "\\Windows\\NX3_Image.bin"
+;  "NVRAMFile" = "\\NX3_NavData.bin"
+  "NVRAMFile" = "\\ResidentFlash\\NX3_NavData.bin"
+  "NVRAMFile_1" = "\\Windows\\NX3_NavData.bin"
+  "NVRAMWritePeriodInMin" = dword:f
+;  "NEXFile" = "\\Storage Card\\latest.nex"
+  "NEXFile" = "\\ResidentFlash\\latest.nex"
+  "NEXFile_1" = "\\Windows\\latest.nex"
+  "NMEA_Period" = "0,0,1,1,1,1,0,0"
+  "NMEA_Priority" = "0,0,1,1,1,1,0,0"
+  "DriverDebug" = dword:0
+  "PowerOnGPSEnable" = dword:0
+  "PowerOnGPSDelayInMilisec" = dword:bb8
+  "StaticFilterCriteria" = "1,2,10.0,1.0,50.0,0,0,4.0,8.0"
+  "FirstFixCriteria" = "60,60,30,280.000000,5000.000000,0.000000,2,1"
+
+

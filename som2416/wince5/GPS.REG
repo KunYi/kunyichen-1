@@ -1,0 +1,62 @@
+
+;-----------------------------------------------------------------------------
+
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\GloNav_GPS]
+	"FriendlyName"="GloNav GPS Driver"
+	"Dll"="GN_GPS_1.dll"
+;;	 //[david.modify] 2008-08-12 21:26
+;; 将ORDER定在COM4加载之后
+;; COM4 ORDER=0
+	"Order"=dword:4
+	"Prefix"="COM"
+;;	 //[david.modify] 2008-07-07 10:08
+;;============================
+;;	"Index"=dword:4
+	"Index"=dword:7
+;;============================	
+	"Min_BatteryLifeP"=dword:2
+;;	 //[david.modify] 2008-07-15 14:22
+	"Write_Protection"=dword:1
+;; //[david.modify] 2008-07-07 10:05
+;;============================
+;	"BB_Port"="COM1:"
+;; s805g使用COM6做GPS端口
+	"BB_Port"="COM6:"
+;;============================	
+	"BB_BaudRate"=dword:1c200
+	"BB_UseRtsCts"=dword:0
+	"BB_HardReset"=dword:0
+;;GNS 4540 Patch Files (not required for systems using GNS 7560)
+;; 如下PATCH文件有问题
+;;=============================
+;	"Patch_File_205"="\\Windows\\E205P061.3CB5"
+;	"Patch_CkSum_205"=dword:3CB5
+;	"Patch_File_301"="\\Windows\\E301P013.D8EF"
+;	"Patch_CkSum_301"=dword:D8EF
+
+;; //[david.modify] 2008-07-28 10:48
+;; 最新PATCH FILE, from justin
+"Patch_File_205"="\\Windows\\E205P061.5b61"
+"Patch_CkSum_205"=dword:00005b61
+"Patch_File_301"="\\Windows\\E301P017.0ef5"
+"Patch_CkSum_301"=dword:00000ef5
+;;=============================	
+;	"UTC_Data_File"="\\ResidentFlash\\GN_UTC_Data.bin"
+;	"NV_Store_File"="\\ResidentFlash\\GN_NV_Store.bin"
+; //[david.modify] 2008-07-28 10:49
+;将星历数据放在RAM,关机即失
+	"UTC_Data_File"="\\Temp\\GN_UTC_Data.bin"
+	"NV_Store_File"="\\Temp\\GN_NV_Store.bin"
+	"Log_File_Path"     = "\\Temp\\GloNavLogs"
+	"Nav_Dbg_Log_File"  = "GN_Nav_Dbg.txt"
+;	"NMEA_Log_File"     = "GN_NMEA.txt"
+	"Events_Log_File"   = "GN_Events.txt"
+	"GNB_Dbg_Log_File"  = "GN_GNB_Dbg.txt"
+
+	"Enable_Nav_Debug" = dword:0
+	"Enable_GNB_Debug" = dword:0
+	"Enable_Event_Log" = dword:0
+;	"Enable_NMEA_Log" = dword:0
+	
+
+; ----------------------------------------------------------------------------

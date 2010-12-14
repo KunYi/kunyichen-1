@@ -1,0 +1,53 @@
+;CODEPAGE=1252
+
+; Version 0.66m
+
+[NL]	
+LANG0001=Taal
+LANG0002=Minuut
+LANG0003=Automat.Zomertijd
+LANG0004=Verbieden Zomertijd
+MAIN0001=Hoofdmenu
+MAIN0002=Navigat
+MAIN0003=Muziek
+MAIN0004=Vid.opnm
+MAIN0005=Afbld
+MAIN0006=E-boek
+MAIN0007=Instell
+SETT0001=Volume
+SETT0002=En.toev
+SETT0003=Verlicht
+SETT0004=Tijd
+SETT0005=Taal
+SETT0006=Systeem
+VOLM0001=Volume Headset
+VOLM0002=Knopgeluid
+VOLM0003=Geen
+VOLM0004=Klein
+VOLM0005=Groot
+VOLM0006=Volume Luidspreker
+POWR0001=Stroomtoevoer
+BKLT0001=Afsluiten na 1 min
+BKLT0002=Afsluiten na 2 min
+BKLT0003=Afsluiten na 5 min
+BKLT0004=Afsluiten na 10 min
+BKLT0005=Afsluiten na 30 min
+BKLT0006=Altijd aan
+TIME0001=Datum
+TIME0002=Tijd
+TIME0003=Tzone
+TIME0004=Jaar
+TIME0005=Maand
+TIME0006=Dag
+TIME0007=Uur
+MUSC0001=Circuleren 
+MUSC0002=Volgorde 
+MUSC0003=Willekeurig 
+MUSC0004=Afspelen
+VERS0001=ID Apparaat
+VERS0002=Systeemversie
+VERS0003=Niet ingesteld
+VERS0004=GPS Contrl
+VERS0005=Help
+VERS0006=Calibrering
+ 

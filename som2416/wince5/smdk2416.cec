@@ -1,0 +1,416 @@
+CECInfo
+(
+	Name ( "smdk2416" )
+	CECVersion ( 5.00 )
+	Description ( "A BSP for the Samsung SMDK2416 Development Platform.  The platform uses the OS that is built for the ARM v4 architecture and contains the ARM instruction set with Thumb Interworking enabled." )
+	GUID ( {82DAA67F-44BF-41F4-A00D-17DFE89886B6} )
+	Vendor ( "Samsung" )
+)
+ComponentType
+(
+	Name ( "BSPs" )
+	GUID ( {3CABD6DA-B577-4A87-9490-9432E80DC2F1} )
+	Description ( "Board Support Packages" )
+	MaxResolvedImpsAllowed( 999 )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "Samsung SMDK2416: ARMV4I" )
+			GUID ( {EDC0A054-2FEF-4C46-9EED-5C65B85E712F} )
+			Description ( "A BSP for the Samsung SMDK2416 Development Platform.  The platform uses the OS that is built for the ARM v4 architecture and contains the ARM instruction set with Thumb Interworking enabled." )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Children ( "{32D4003E-B007-4064-A199-961FF1E677D8}" )
+			SizeIsCPUDependent( 1 )
+			CPUSizeMultiplier( 1.0 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {A8FE2B0D-0779-4209-9412-EF06E071C922} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+				)
+				BuildMethod
+				(
+					GUID ( {3D3486D1-E3EE-4836-9547-81446BEC9C30} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "Keyboard/Mouse" )
+	GUID ( {80B070A7-0633-4EB0-A6CE-DDA12E6E5918} )
+	Description ( "Import Device Drivers" )
+	Group ( "\Device Drivers\Input Devices" )
+	Vendor ( "Samsung" )
+	MaxResolvedImpsAllowed( 1 )
+	ExcludeWhenSet( ANY, "BSP_NOKEYBD" )
+	RequiredCEModules( ANY, "keybd pointer" )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "S32416 Matrix Keyboard/Mouse English" )
+			GUID ( {48C4445B-0F4D-411B-812C-9A8150C1E99E} )
+			Description ( "Samsung S32416 Matrix Keyboard/Mouse English" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "KbdS3C2450Us.dll" )
+			Variable( "BSP_KEYBD_NOP",  )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {8590DED5-FF79-4012-94E3-6E1E29CAEEDD} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450US")' )
+				)
+				BuildMethod
+				(
+					GUID ( {014F1F50-9490-447D-BC37-C9BDA1C78619} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450US")' )
+				)
+			)
+		)
+		Implementation
+		(
+			Name ( "S32416 Matrix Keyboard/Mouse Japanese2 (IBM layout)" )
+			GUID ( {F63EC9B7-A23C-464E-99BF-A706C505C593} )
+			Description ( "Samsung S32416 Matrix Keyboard/Mouse Japanese2 (IBM layout)" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "KbdS3C2450Jpn2.dll" )
+			Variable( "BSP_KEYBD_JPN1",  )
+			Variable( "BSP_KEYBD_NOP",  )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {D08B6BA9-62BF-4CBE-A70E-32454694F24B} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450JPN2")' )
+				)
+				BuildMethod
+				(
+					GUID ( {B882AE06-3D99-4E9B-B560-6495CCEAC934} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450JPN2")' )
+				)
+			)
+		)
+		Implementation
+		(
+			Name ( "S32416 Matrix Keyboard/Mouse Korean" )
+			GUID ( {EB5CA220-356D-4321-B317-B5F1436310B0} )
+			Description ( "Samsung S32416 Keyboard/Mouse Korean" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "KbdS3C2450Kor.dll" )
+			Variable( "BSP_KEYBD_NOP",  )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {79C6594B-31D0-43DE-972D-0755E5A95C4C} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450KOR")' )
+				)
+				BuildMethod
+				(
+					GUID ( {51B6D517-6CD5-4FE1-A2C4-12C7CE9CD958} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450KOR")' )
+				)
+			)
+		)
+		Implementation
+		(
+			Name ( "S32416 Matrix Keyboard/Mouse Common" )
+			GUID ( {F2E265A0-1050-446C-9720-F1795316476B} )
+			Description ( "Samsung S32416 Matrix Keyboard/Mouse Common" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "kbdmouse.dll" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {42DCA175-1DB1-4007-A37D-01330451EF92} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDCOMMON")' )
+				)
+				BuildMethod
+				(
+					GUID ( {E94C7521-78F9-4027-99E2-F677ACCD1E35} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDCOMMON")' )
+				)
+			)
+		)
+		Implementation
+		(
+			Name ( "S32416 Matrix Keyboard/Mouse Japanese1 (NEC layout)" )
+			GUID ( {FC058231-C6DD-43D4-95D7-919502573FDC} )
+			Description ( "Samsung S32416 Matrix Keyboard/Mouse Japanese1 (NEC layout)" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "KbdS3C2450Jpn1.dll" )
+			Variable( "BSP_KEYBD_JPN1", "1" )
+			Variable( "BSP_KEYBD_NOP",  )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {A027A192-AF25-4BD1-A3C0-3A9D29A2140F} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\KEYBD\KBDS3C2450JPN1")' )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "Serial" )
+	GUID ( {8C119F3D-5700-4B93-85E6-B45E1EF44817} )
+	Description ( "Serial" )
+	Group ( "\Device Drivers" )
+	Vendor ( "Samsung" )
+	MaxResolvedImpsAllowed( 999 )
+	ExcludeWhenSet( ANY, "BSP_NOSERIAL" )
+	RequiredCEModules( ANY, "pcmcia serial" )
+	RequiredCEModules( ALL, "device" )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "S3C2416 Serial Driver" )
+			GUID ( {D34E1152-F38F-4CCB-9BC0-E9F6823070F3} )
+			Description ( "S3C2416 Serial Driver." )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "serial_smdk2450.dll" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {8B7A4DFF-9CF3-4312-94E4-49B74937A34A} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\SERIAL")' )
+				)
+				BuildMethod
+				(
+					GUID ( {EE8E8030-75F6-4B9A-BED0-F5A77FBA673A} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\SERIAL")' )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "USB Function Bus Drivers" )
+	GUID ( {49E1862C-A1CF-4926-A66C-1BC2AE12E1E7} )
+	Description ( "USB Function Bus Drivers" )
+	Group ( "\Device Drivers\USB Function" )
+	Vendor ( "Samsung" )
+	MaxResolvedImpsAllowed( 999 )
+	ExcludeWhenSet( ANY, "BSP_NOUSB" )
+	RequiredCEModules( ANY, "net2280" )
+	RequiredCEModules( ALL, "device" )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "Samsung 2416 CSP" )
+			GUID ( {0C74A85D-7ED6-4C6F-AC87-48029B5A5056} )
+			Description ( "Samsung 2416 CSP USB Function Driver (SYSGEN_USBFN)" )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-03-28" )
+			FeatureVariable( "SYSGEN_USBFN", "1" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {E5AF9F26-31C2-4674-B7C3-426412D58B1D} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+				)
+				BuildMethod
+				(
+					GUID ( {C892DB62-8C49-49F4-A981-BD007FB83FD1} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "MSFlash Drivers" )
+	GUID ( {4C368E2A-672B-4F4B-BBD5-60444A3FC050} )
+	Description ( "MSFlash Drivers" )
+	Group ( "\Storage Drivers" )
+	Vendor ( "Samsung" )
+	MaxResolvedImpsAllowed( 1 )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "SmartMedia NAND Flash Driver (SMFLASH)" )
+			GUID ( {C7764A65-B9E1-4E91-9296-0ACE3614A1FE} )
+			Description ( "SmartMedia NAND Flash Driver (SMFLASH)" )
+			BSPPlatformDir ( "smdk2443" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2003-01-14" )
+			FeatureVariable( "SYSGEN_MSFLASH", "1" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {2F68C3B7-7FB7-472C-919D-C5FCD3729309} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(DIRS,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\COMMON\SMARTMEDIA")' )
+				)
+				BuildMethod
+				(
+					GUID ( {1DCC9952-C99E-4D83-BDBE-8CDA184D2E1F} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(DIRS,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\COMMON\SMARTMEDIA")' )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "Power Button" )
+	GUID ( {CC8F73B3-F4AC-49BB-8529-89EFB7EFC262} )
+	Description ( "Power button driver" )
+	Group ( "\Device Drivers" )
+	Vendor ( "Samsung" )
+	MaxResolvedImpsAllowed( 999 )
+	ExcludeWhenSet( ANY, "BSP_NOPOWERBUTTON" )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "SMDK2416 Power Button" )
+			GUID ( {27B97ECC-CC81-4B6F-A175-A8957C3D84B7} )
+			Description ( "Samsung SMDK2416 power button." )
+			BSPPlatformDir ( "smdk2416" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			Variable( "MODULE_NAME", "pwrbtn2450.dll" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {5093C09F-927F-4133-8CC2-015E4082B744} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\PWRBTN")' )
+				)
+				BuildMethod
+				(
+					GUID ( {973AA197-4492-4106-B5DC-4FE0A3E0B230} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#SRCCODE(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\DRIVERS\PWRBTN")' )
+				)
+			)
+		)
+	)
+)
+ComponentType
+(
+	Name ( "Ethernet Bootloader (eboot)" )
+	GUID ( {32D4003E-B007-4064-A199-961FF1E677D8} )
+	Description ( "Samsung Windows CE Ethernet bootloader." )
+	Group ( "Bootloaders" )
+	MaxResolvedImpsAllowed( 1 )
+	Implementations
+	(
+		Implementation
+		(
+			Name ( "Ethernet Bootloader (eboot)" )
+			GUID ( {207B3C91-DB19-4B2F-8D20-5172A9D773C7} )
+			Description ( "Samsung Windows CE Ethernet bootloader." )
+			BSPPlatformDir ( "smdk2443" )
+			Version ( "5.0.0.0" )
+			Locale ( 0409 )
+			Vendor ( "Samsung" )
+			Date ( "2004-04-15" )
+			SizeIsCPUDependent( 1 )
+			BuildMethods
+			(
+				BuildMethod
+				(
+					GUID ( {262C735C-6E62-4F00-A1C1-0F8F280A67C0} )
+					Step ( BSP )
+					CPU ( "ARMV4I" )
+					Action ( '#BUILD(SOURCES,"$(_WINCEROOT)\PLATFORM\SMDK2416\SRC\BOOTLOADER\EBOOT")' )
+				)
+			)
+		)
+	)
+)

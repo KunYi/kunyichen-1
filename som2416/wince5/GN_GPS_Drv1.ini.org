@@ -1,0 +1,23 @@
+"Prefix"            = "COM"
+"Index"             = 6
+"Write_Protection"  = 0
+
+"BB_Port"           = "COM4:"
+"BB_BaudRate"	    = 115200
+"BB_UseRtsCts"	    = 0
+
+"Patch_File_205"    = "\Windows\E205P060.1FFE"
+"Patch_CkSum_205"   = 0x1FFE
+"Patch_File_301"    = "\Windows\E301P014.0B35"
+"Patch_CkSum_301"   = 0x0B35
+"Patch_File_502"    = "\Windows\E502P011.EEDD"
+"Patch_CkSum_502"   = 0xEEDD
+
+"UTC_Data_File"	    = "\ResidentFlash\GN_UTC_Data.bin"
+"NV_Store_File"	    = "\ResidentFlash\GN_NV_Store.bin"
+
+"Log_File_Path"     = "\ResidentFlash\GloNavLogs"
+"Nav_Dbg_Log_File"  = "GN_Nav_Dbg.txt"
+"NMEA_Log_File"     = "GN_NMEA.txt"
+"Events_Log_File"   = "GN_Events.txt"
+"GNB_Dbg_Log_File"  = "GN_GNB_Dbg.txt"

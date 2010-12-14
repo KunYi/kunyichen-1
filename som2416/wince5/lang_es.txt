@@ -1,0 +1,54 @@
+;CODEPAGE=1252
+
+; Versión 0.03
+
+[ES]	
+LANG0001=Idioma
+LANG0002=Minuto
+LANG0003=Auto Hora de Verano
+LANG0004=Prohibe Hora de Verano
+MAIN0001=Menu Principal
+MAIN0002=Guía
+MAIN0003=Música
+MAIN0004=Video
+MAIN0005=Foto
+MAIN0006=E-Libro
+MAIN0007=Config
+SETT0001=Volumen
+SETT0002=Fte Eléc
+SETT0003=LuzFondo
+
+SETT0004=Tiempo
+SETT0005=Idioma
+SETT0006=Sistema
+VOLM0001=Volumen de Auricular
+VOLM0002=Sonido de Tecla
+VOLM0003=Cero
+VOLM0004=Chico
+VOLM0005=Grande
+VOLM0006=Volumen de Parlante
+POWR0001=Electricidad
+BKLT0001=Apagdo en 1 Minuto
+BKLT0002=Apagado en 2 Minutos
+BKLT0003=Apagado en 5 Minutos
+BKLT0004=Apagado en 10 Minutos
+BKLT0005=Apagado en 30 Minutos
+BKLT0006=Siempre Encendido
+TIME0001=Fecha
+TIME0002=Tiempo
+TIME0003=Zona T
+TIME0004=Año
+TIME0005=Mes
+TIME0006=Día
+TIME0007=Hora
+MUSC0001=Repetir 
+MUSC0002=Orden 
+MUSC0003=Aleatorio 
+MUSC0004=Reproduce
+VERS0001=ID de Dispositivo
+VERS0002=Versión de Sistema
+VERS0003=No Configurado
+VERS0004=Prueba GPS
+VERS0005=Manual 
+VERS0006=Pantalla
+ 

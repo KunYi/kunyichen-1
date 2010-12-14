@@ -1,0 +1,61 @@
+;CODEPAGE=1252
+
+; Version 0.04
+
+[DE]
+LANG0001=Sprache
+LANG0002=Minute
+LANG0003=Auto-Sommerzeit
+LANG0004=Sommerzeit verboten
+MAIN0001=Hauptmenü
+MAIN0002=NAV.
+MAIN0003=Musik
+MAIN0004=Video
+MAIN0005=Bild
+MAIN0006=E-Buch
+MAIN0007=Setting
+SETT0001=Volume
+SETT0002=Strom
+SETT0003=HL.
+SETT0004=Zeit
+SETT0005=Sprache
+SETT0006=System
+VOLM0001=Lautstärke der Kopfhörer
+VOLM0002=Ton der Taste
+VOLM0003=Kein
+VOLM0004=Auf
+VOLM0005=Ab
+VOLM0006=Lautsprecher -Volume
+POWR0001=Batterien
+BKLT0001=Taste nach 1 Min aus 
+BKLT0002=Taste nach 2 Min aus
+BKLT0003=Taste nach 5 Min aus
+BKLT0004=Taste nach 10 Min aus
+BKLT0005=Taste nach 30 Min aus
+BKLT0006=stets eingeschaltet
+TIME0001=Datum
+TIME0002=Zeit
+TIME0003=Zz.
+TIME0004=Jahr
+TIME0005=Monat
+TIME0006=Tag
+TIME0007=Stunde
+MUSC0001=zirkuliert 
+MUSC0002=Abfolge 
+MUSC0003=wahlfrei 
+MUSC0004=spielen
+VERS0001=ID des Geräts
+VERS0002=Systemsversion
+VERS0003=Nicht eingestellt
+VERS0004=GPS-Test
+VERS0005=Help
+VERS0006=Kalibrierung
+ 
+	
+	
+	
+	
+	
+	
+	
+
